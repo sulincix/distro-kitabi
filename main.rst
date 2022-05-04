@@ -267,3 +267,28 @@ Veya bu işlemi kullanıcının elle yapması istenir ve hata mesajı verilerek 
 
 Yukarıdaki örnekte paketin çakışmaları mevcutsa kurulum reddediliyor. Ayrıca paket bağımlılığı listesinde birbiri ile çakışan paketler mevcutsa da kurulum reddedilmelidir.
 
+Ters bağımlılıklar hesaplanırken burada yapılan işlemin tam tersi yapılır.
+Kaldırılacak olan paket diğer paketlerde ağımlılık olarak ekli mi diye bakılır ve aynı işlem onlara da uygulanır.
+ters bağımlılıklarda da cycle dependency sorunu oluşabilir. Fakat kaynak tabanlılarda da kaldırma işleminde cycle dependency soruna sebep olmaz.
+
+.. code-block:: python
+
+	...
+	need_remove = []
+	def resolve_revdep(package):
+	    if package not in need_remove:
+	        need_remove.append(package)
+	    for pkg in all_packages:
+	        if package in pkg.dependencies:
+	            resolve_revdep(pkg)
+	resolve_revdep(xxx)
+	...
+
+Yukarıdaki örnekte paket hangi paketlere ait bağımlılık diye tespit edildi ve iç içe aynı işlemler uygulandı.
+
+Paket kurulabilirliğinin denetlenmesi
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paket sistemimiz kurulacak veya kaldırılacak paketlerin listesini oluşturduktan sonra bu paketlerin kullanılabilirliği denetlenmelidir. 
+Eğer paket depoda yoksa veya hatalı sürümü varsa, paket kaldırıldığında sisteme zarar verecekse, paket kara listede ve kurulmaması gerekiyorsa engellenmesi gereklidir.
+
+
