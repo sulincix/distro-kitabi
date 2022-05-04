@@ -262,7 +262,7 @@ Veya bu işlemi kullanıcının elle yapması istenir ve hata mesajı verilerek 
 	    if pkg.is_installed():
 	        error_message("Conflict detected! Please remove %s" % pkg.name)
 	    elif pkg in need_install:
-	       error_message("Conflict detected! Cannot resolve %s" % pkg.name)
+	        error_message("Conflict detected! Cannot resolve %s" % pkg.name)
 	...
 
 Yukarıdaki örnekte paketin çakışmaları mevcutsa kurulum reddediliyor. Ayrıca paket bağımlılığı listesinde birbiri ile çakışan paketler mevcutsa da kurulum reddedilmelidir.
