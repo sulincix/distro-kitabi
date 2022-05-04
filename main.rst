@@ -187,7 +187,7 @@ Paket yönetim sistemlerinde paket kurma ve kaldırma işlemleri aşağıdaki s�
 * Yerel veritabanından paketlerin durununun sorgulanması
 * Paket bağımılıklarının çözümlenmesi
 * Paketlerin kurulabilirliğinin denetlenmesi
-* Paketlerin indirlmesi
+* Paketlerin indirilmesi
 * Paketlerin bütünlüğünün kontrol edilmesi
 * Paketlerin kurulması
 * Paket kurulum sonrası işlemlerin yapılması
@@ -290,5 +290,56 @@ Paket kurulabilirliğinin denetlenmesi
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Paket sistemimiz kurulacak veya kaldırılacak paketlerin listesini oluşturduktan sonra bu paketlerin kullanılabilirliği denetlenmelidir. 
 Eğer paket depoda yoksa veya hatalı sürümü varsa, paket kaldırıldığında sisteme zarar verecekse, paket kara listede ve kurulmaması gerekiyorsa engellenmesi gereklidir.
+
+Paketlerin indirilmesi
+^^^^^^^^^^^^^^^^^^^^^^
+Paketlerin kurulabilirliği de denetlendikten sonra paketler indirilir.
+Paketler indirilirken depo indexi içerisinden paketin nerede olduğu elde edilir ve o adrese istek atılır.
+Paketler indirilme esnasında hata oluşursa işleme devam edilmez. Hata mesajı vererek çıkılmaşı gerekir.
+
+.. code-block:: shell
+
+	function fetcher {
+	    paket_adi=$1
+	    depo_adresi=$(get_repo $1)
+	    paket_yolu=$(get_package_path $1)
+	    wget -O /paket/onbellek/dizini/${paket_adi}.zip ${depo_adresi}/{paket_yolu}
+	}
+	fetcher hello
+
+Yukarıdaki örnekte paket adı, konumu ve hangi depoda bulunduğu bilgisi alındıktan sonra paket önbelleğine indirilir.
+
+Paketler indirilirken önce farklı bir dizine indirilip işlem bittiğinde önbelek dizinine taşınırsa paketler indirilirken oluşacak hatalar en aza indirilir.
+
+Kaynak paketler için paketin derleme talimatı derlenmek üzere geçici dizine indirilir.
+Derlemek için gereken arşiv dosyaları ve yamalar gibi diğer dosyalar derleme öncesi indirilmelidir. 
+Bu işlem isterseniz derleme esnasında, isterseniz de kaynak paketler indirilirken gerçekleştirilir.
+
+Eğer depo indexi eski ise indirme işleminde sorun oluşabilir. Bu durumun önüne geçebilmek için depo indexinin güncelliğini denetleyebiliriz. Bunu yapmanın en kolay yolu ise depo index dosyasının hash değerini tutan bir dosyayı indirip yereldeki örneği ile aynı mı diye bakmaktır. Bu sayede depoya güncelleme gelip gelmediğini tüm indexi indirmeye gerek kalmadan anlayabiliriz. Eğer depo indexi güncellendiyse paketleri indirmeden önce depo indexini güncelleyebiliriz. Bu işlem isteğe bağlıdır ve çoğu paket sistemi bunu kulanıcı insiyatifine bırakır.
+
+Paket bütünlüğü kontrol etme
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paketler indirildikten sonra depo indexi içerisindeki hash değeri ile indirilen paketinki aynı mı diye bakılır.
+Bununla birlikte gpg imzası kontrolü gibi ek kontroller yapılır. Bu sayede paketin gerçekten dağıtımın orijinal deposundan hatasız indirildiğinden emin olunur.
+
+İkinci olarak paketlerin içerisindeki dosya listeleri çıkartılır ve çakışma var mı diye kontrol edilir.
+Ayrıca başka bir paketin dosyası kurulu olan diğer paketin üzerine yazılmamalıdır.
+Ancak paket bilgisinde üzerine yazılabilecek paket lisesi varsa ve paket o listedeyse bu durum görmezden gelinir.
+Eğer dosya çakışması varsa buna **file confilct** adı verilir. Bu durum oluşuyorsa ve paket bilgisinde belirtilmemişse kurulum engellenmelidir.
+File conflict kaynak paketlerde daha henüz derleme işlemine başlanmadığı için tespit edilemeyeceği için kontrol edilmez.
+
+Dizinler için file confilct kontrolüne bakılmaz.
+.. code-block:: python
+
+	all_files = []
+	for pkg in need_install:
+	    for file is pkg.file_list:
+	        if file in all_files:
+	            error_message("File conflict detected %s" % file)
+	        all_files.append(file)
+
+Yukarıdaki örnekte bütün dosyaların yollarını tutan dizi oluşturulmuştur.
+Bu diziye sırası ile kurulacak paketlerin dosyalarının yolları eklenmiştir.
+Eğer dosya birden fazla pakette varsa filde conflict varlığı tespit edilip işleme son verilmiştir.
 
 

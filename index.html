@@ -526,7 +526,7 @@ Bu durumun önüne geçebilmek için <strong>fakeroot</strong> ve <strong>unshar
 <li>Yerel veritabanından paketlerin durununun sorgulanması</li>
 <li>Paket bağımılıklarının çözümlenmesi</li>
 <li>Paketlerin kurulabilirliğinin denetlenmesi</li>
-<li>Paketlerin indirlmesi</li>
+<li>Paketlerin indirilmesi</li>
 <li>Paketlerin bütünlüğünün kontrol edilmesi</li>
 <li>Paketlerin kurulması</li>
 <li>Paket kurulum sonrası işlemlerin yapılması</li>
@@ -615,6 +615,63 @@ ters bağımlılıklarda da cycle dependency sorunu oluşabilir. Fakat kaynak ta
 <h2>Paket kurulabilirliğinin denetlenmesi</h2>
 <p>Paket sistemimiz kurulacak veya kaldırılacak paketlerin listesini oluşturduktan sonra bu paketlerin kullanılabilirliği denetlenmelidir.
 Eğer paket depoda yoksa veya hatalı sürümü varsa, paket kaldırıldığında sisteme zarar verecekse, paket kara listede ve kurulmaması gerekiyorsa engellenmesi gereklidir.</p>
+</div>
+<div class="section" id="paketlerin-indirilmesi">
+<h2>Paketlerin indirilmesi</h2>
+<p>Paketlerin kurulabilirliği de denetlendikten sonra paketler indirilir.
+Paketler indirilirken depo indexi içerisinden paketin nerede olduğu elde edilir ve o adrese istek atılır.
+Paketler indirilme esnasında hata oluşursa işleme devam edilmez. Hata mesajı vererek çıkılmaşı gerekir.</p>
+<pre class="code shell literal-block">
+<span class="keyword">function</span> fetcher <span class="operator">{</span>
+    <span class="name variable">paket_adi</span><span class="operator">=</span><span class="name variable">$1</span>
+    <span class="name variable">depo_adresi</span><span class="operator">=</span><span class="keyword">$(</span>get_repo <span class="name variable">$1</span><span class="keyword">)</span>
+    <span class="name variable">paket_yolu</span><span class="operator">=</span><span class="keyword">$(</span>get_package_path <span class="name variable">$1</span><span class="keyword">)</span>
+    wget -O /paket/onbellek/dizini/<span class="literal string interpol">${</span><span class="name variable">paket_adi</span><span class="literal string interpol">}</span>.zip <span class="literal string interpol">${</span><span class="name variable">depo_adresi</span><span class="literal string interpol">}</span>/<span class="operator">{</span>paket_yolu<span class="operator">}</span>
+<span class="operator">}</span>
+fetcher hello
+</pre>
+<p>Yukarıdaki örnekte paket adı, konumu ve hangi depoda bulunduğu bilgisi alındıktan sonra paket önbelleğine indirilir.</p>
+<p>Paketler indirilirken önce farklı bir dizine indirilip işlem bittiğinde önbelek dizinine taşınırsa paketler indirilirken oluşacak hatalar en aza indirilir.</p>
+<p>Kaynak paketler için paketin derleme talimatı derlenmek üzere geçici dizine indirilir.
+Derlemek için gereken arşiv dosyaları ve yamalar gibi diğer dosyalar derleme öncesi indirilmelidir.
+Bu işlem isterseniz derleme esnasında, isterseniz de kaynak paketler indirilirken gerçekleştirilir.</p>
+<p>Eğer depo indexi eski ise indirme işleminde sorun oluşabilir. Bu durumun önüne geçebilmek için depo indexinin güncelliğini denetleyebiliriz. Bunu yapmanın en kolay yolu ise depo index dosyasının hash değerini tutan bir dosyayı indirip yereldeki örneği ile aynı mı diye bakmaktır. Bu sayede depoya güncelleme gelip gelmediğini tüm indexi indirmeye gerek kalmadan anlayabiliriz. Eğer depo indexi güncellendiyse paketleri indirmeden önce depo indexini güncelleyebiliriz. Bu işlem isteğe bağlıdır ve çoğu paket sistemi bunu kulanıcı insiyatifine bırakır.</p>
+</div>
+<div class="section" id="paket-butunlugu-kontrol-etme">
+<h2>Paket bütünlüğü kontrol etme</h2>
+<p>Paketler indirildikten sonra depo indexi içerisindeki hash değeri ile indirilen paketinki aynı mı diye bakılır.
+Bununla birlikte gpg imzası kontrolü gibi ek kontroller yapılır. Bu sayede paketin gerçekten dağıtımın orijinal deposundan hatasız indirildiğinden emin olunur.</p>
+<p>İkinci olarak paketlerin içerisindeki dosya listeleri çıkartılır ve çakışma var mı diye kontrol edilir.
+Ayrıca başka bir paketin dosyası kurulu olan diğer paketin üzerine yazılmamalıdır.
+Ancak paket bilgisinde üzerine yazılabilecek paket lisesi varsa ve paket o listedeyse bu durum görmezden gelinir.
+Eğer dosya çakışması varsa buna <strong>file confilct</strong> adı verilir. Bu durum oluşuyorsa ve paket bilgisinde belirtilmemişse kurulum engellenmelidir.
+File conflict kaynak paketlerde daha henüz derleme işlemine başlanmadığı için tespit edilemeyeceği için kontrol edilmez.</p>
+<p>Dizinler için file confilct kontrolüne bakılmaz.
+.. code-block:: python</p>
+<blockquote>
+<p>all_files = []
+for pkg in need_install:</p>
+<div class="system-message">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">main.rst</tt>, line 336)</p>
+Unexpected indentation.</div>
+<blockquote>
+<dl class="docutils">
+<dt>for file is pkg.file_list:</dt>
+<dd><dl class="first docutils">
+<dt>if file in all_files:</dt>
+<dd>error_message(&quot;File conflict detected %s&quot; % file)</dd>
+</dl>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">main.rst</tt>, line 339)</p>
+Definition list ends without a blank line; unexpected unindent.</div>
+<p class="last">all_files.append(file)</p>
+</dd>
+</dl>
+</blockquote>
+</blockquote>
+<p>Yukarıdaki örnekte bütün dosyaların yollarını tutan dizi oluşturulmuştur.
+Bu diziye sırası ile kurulacak paketlerin dosyalarının yolları eklenmiştir.
+Eğer dosya birden fazla pakette varsa filde conflict varlığı tespit edilip işleme son verilmiştir.</p>
 </div>
 </div>
 </div>
