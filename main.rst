@@ -247,7 +247,27 @@ Bu duruma **cycle dependency** adı verilir. Genellikle kötü paketlenmiş pake
 	   cache_list.append(package)
 	   ...
 
-Yukarıdaki örnekte her paket sadece bir kez resove fonksiyonundan geçer. Bu sayede cycle dependency sorunu aşılmış olur. Kaynak tabanlı paket sistemlerinde bu çözüm işe yaramayabilir. Bunun sebebi ise paketler derlenirken kullanılacak derleme bağımlılığı sırası hatalı hesaplanabilir. Bu sebeple paketçilerin cycle dependency sorununa sebep olmaması gereklidir.
+Yukarıdaki örnekte her paket sadece bir kez resove fonksiyonundan geçer.
+Bu sayede cycle dependency sorunu aşılmış olur. Kaynak tabanlı paket sistemlerinde bu çözüm işe yaramayabilir.
+Bunun sebebi ise paketler derlenirken kullanılacak derleme bağımlılığı sırası hatalı hesaplanabilir.
+Bu sebeple paketçilerin cycle dependency sorununa sebep olmaması gereklidir.
 
-Yukarıdaki örnekte eğer cycle dependency sorunu oluştuysa cycle_list listesinde bunların listesi tutulur. Kaynak tabanlı paket listesinde bu listede bir eleman varsa derleme yapılamayacağı için hata verip çıkması sağlanmalıdır.
+Yukarıdaki örnekte eğer cycle dependency sorunu oluştuysa cycle_list listesinde bunların listesi tutulur.
+Kaynak tabanlı paket listesinde bu listede bir eleman varsa derleme yapılamayacağı için hata verip çıkması sağlanmalıdır.
+
+Bazı durumlarda bir paket kurulu iken başma bir paketin kurulamaması gerekmektedir.
+Bu gibi durumlara **confilct** adı verilir. Conflict varsa kurulu olan paket silinir ve yerine istenen paket kurulur.
+Veya bu işlemi kullanıcının elle yapması istenir ve hata mesajı verilerek kapanır.
+
+.. code-block:: python
+
+	...
+	for pkg in package.conflicts:
+	    if pkg.is_installed():
+	        error_message("Conflict detected! Please remove %s" % pkg.name)
+	    elif pkg in need_install:
+	       error_message("Conflict detected! Cannot resolve %s" % pkg.name)
+	...
+
+Yukarıdaki örnekte paketin çakışmaları mevcutsa kurulum reddediliyor. Ayrıca paket bağımlılığı listesinde birbiri ile çakışan paketler mevcutsa da kurulum reddedilmelidir.
 
