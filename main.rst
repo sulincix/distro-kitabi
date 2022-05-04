@@ -252,7 +252,7 @@ Yukarıdaki örnekte eğer cycle dependency sorunu oluştuysa cycle_list listesi
 Kaynak tabanlı paket listesinde bu listede bir eleman varsa derleme yapılamayacağı için hata verip çıkması sağlanmalıdır.
 
 Bazı durumlarda bir paket kurulu iken başma bir paketin kurulamaması gerekmektedir.
-Bu gibi durumlara **confilct** adı verilir. Conflict varsa kurulu olan paket silinir ve yerine istenen paket kurulur.
+Bu gibi durumlara **conflict** adı verilir. Conflict varsa kurulu olan paket silinir ve yerine istenen paket kurulur.
 Veya bu işlemi kullanıcının elle yapması istenir ve hata mesajı verilerek kapanır.
 
 .. code-block:: python
