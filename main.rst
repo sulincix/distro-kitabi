@@ -180,3 +180,74 @@ Paket sistemi derleme işlemi yaparken root yekisi kullanmamalıdır.
 Bunun en önemli sebebi ise paket derlenirken hatalı bir durum oluşursa derleme yapan sisteme müdahale edebilir ve paket bozuk oluşturulabilir.
 Bu durumun önüne geçebilmek için **fakeroot** ve **unshare** komutlarından veya aynı işe yarayan yöntemlere başvurmanız gerekmektedir.
 
+Bölüm 2: Paket sisteminin iç yapısı
+-----------------------------------
+Paket yönetim sistemlerinde paket kurma ve kaldırma işlemleri aşağıdaki sıra ile yapılır:
+
+* Yerel veritabanından paketlerin durununun sorgulanması
+* Paket bağımılıklarının çözümlenmesi
+* Paketlerin kurulabilirliğinin denetlenmesi
+* Paketlerin indirlmesi
+* Paketlerin bütünlüğünün kontrol edilmesi
+* Paketlerin kurulması
+* Paket kurulum sonrası işlemlerin yapılması
+* Yerel veritabanının güncellenmesi
+
+Paketlerin sorgulanması
+^^^^^^^^^^^^^^^^^^^^^^^
+Paket sistemleri paketler kurulmadan önce paketler kurulu mu değil mi diye kontrolden geçer.
+Hangi paketlerin kurulacağıda dair bir liste oluşturulur.
+Bu listede yer alan paketler bir sonraki aşamaya geçer.
+
+.. code-block:: python
+
+	need_install = []
+	for pkg in pkg_list:
+	    if not pkg.is_installed():
+	        need_install.append(pkg.name)
+
+Yukarıdaki örnekte paket kurulu değilse kurulacak paketler listesine eklenir.
+Paket kaldırılırken de bu işlemin tam tersi plarak kurulu olmayan paketler es geçilir.
+
+Paket bağımılıkları çözme
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Bir paket sisteminin en karmaşık ve en önemli parçası bağımılık çözme kısmıdır.
+Bu kısımda paketler ihtiyaç duyulan bağımlılıkları ile beraber kurulacağı için hangi paketlerin gerekli olduğuna karar veren kısım burasıdır.
+Çalışma prensibi olarak sürekli kendini tekrarlayan bir fonksiyon bulunur ve bu fonksiyon tamamı hesaplanana kadar içi içe çalışmaya devam eder.
+
+Bir pakete ihtiyaç duyan tüm paketlere ters bağımlılık adı verilir. Bu yapıyı ağacın köklerine ve dallarına benzetebiliriz. Bir dala ulaşmak için geçmemiz gereken dallar bağımlılıkları bir dalı kestiğimizde etkilenen dallar işe ters bağımlılıkları ifade eder.
+
+.. code-block:: python
+
+	need_install = []
+	def resolve(package):
+	    for pkg in package.dependencies:
+	        if pkg not in need_install:
+	            resolve(pkg)
+	    if not package.is_installed():
+	        need_install.append(package)
+	resolve(xxxx)
+
+Yukarıdaki örnekte bağımlılık ağacı bulma gösterilmiştir. Burada **resolve** fonksiyonu kendi kendisini iç içe çağırır.
+Paketlerin bağımlılıkları ve onun alt bağımlılıkları bu fonksiyona sokulur. Kurulu olmayanlar kurulacak paket listesine eklenir.
+Burada bazı durumlarda bu döngüsel işlem kısır döngüye girip sonsuz kere tekrar edebilir ve işlem bitmez.
+Bu duruma **cycle dependency** adı verilir. Genellikle kötü paketlenmiş paketlerden kaynaklanır. Kaynak tabanlı paket sistemlerinde bu durum çözülemezken ikili paket sistemlerinde derleme yapılmayacağı için aşağıdaki gibi bir çözüm bulunabilir.
+
+.. code-block:: python
+
+	need_install = []
+	cache_list = []
+	cycle_list = []
+	
+	def resolve(package):
+	   if package in cache_list:
+	       if package not in cycle_list:
+	           cycşe_list.append(package)
+	       return
+	   cache_list.append(package)
+	   ...
+
+Yukarıdaki örnekte her paket sadece bir kez resove fonksiyonundan geçer. Bu sayede cycle dependency sorunu aşılmış olur. Kaynak tabanlı paket sistemlerinde bu çözüm işe yaramayabilir. Bunun sebebi ise paketler derlenirken kullanılacak derleme bağımlılığı sırası hatalı hesaplanabilir. Bu sebeple paketçilerin cycle dependency sorununa sebep olmaması gereklidir.
+
+Yukarıdaki örnekte eğer cycle dependency sorunu oluştuysa cycle_list listesinde bunların listesi tutulur. Kaynak tabanlı paket listesinde bu listede bir eleman varsa derleme yapılamayacağı için hata verip çıkması sağlanmalıdır.
+

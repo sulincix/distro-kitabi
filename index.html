@@ -519,6 +519,70 @@ Bu durumun önüne geçebilmek için <strong>fakeroot</strong> ve <strong>unshar
 </div>
 </div>
 </div>
+<div class="section" id="bolum-2-paket-sisteminin-ic-yapisi">
+<h1>Bölüm 2: Paket sisteminin iç yapısı</h1>
+<p>Paket yönetim sistemlerinde paket kurma ve kaldırma işlemleri aşağıdaki sıra ile yapılır:</p>
+<ul class="simple">
+<li>Yerel veritabanından paketlerin durununun sorgulanması</li>
+<li>Paket bağımılıklarının çözümlenmesi</li>
+<li>Paketlerin kurulabilirliğinin denetlenmesi</li>
+<li>Paketlerin indirlmesi</li>
+<li>Paketlerin bütünlüğünün kontrol edilmesi</li>
+<li>Paketlerin kurulması</li>
+<li>Paket kurulum sonrası işlemlerin yapılması</li>
+<li>Yerel veritabanının güncellenmesi</li>
+</ul>
+<div class="section" id="paketlerin-sorgulanmasi">
+<h2>Paketlerin sorgulanması</h2>
+<p>Paket sistemleri paketler kurulmadan önce paketler kurulu mu değil mi diye kontrolden geçer.
+Hangi paketlerin kurulacağıda dair bir liste oluşturulur.
+Bu listede yer alan paketler bir sonraki aşamaya geçer.</p>
+<pre class="code python literal-block">
+<span class="name">need_install</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+<span class="keyword">for</span> <span class="name">pkg</span> <span class="operator word">in</span> <span class="name">pkg_list</span><span class="punctuation">:</span>
+    <span class="keyword">if</span> <span class="operator word">not</span> <span class="name">pkg</span><span class="operator">.</span><span class="name">is_installed</span><span class="punctuation">():</span>
+        <span class="name">need_install</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">pkg</span><span class="operator">.</span><span class="name">name</span><span class="punctuation">)</span>
+</pre>
+<p>Yukarıdaki örnekte paket kurulu değilse kurulacak paketler listesine eklenir.
+Paket kaldırılırken de bu işlemin tam tersi plarak kurulu olmayan paketler es geçilir.</p>
+</div>
+<div class="section" id="paket-bagimiliklari-cozme">
+<h2>Paket bağımılıkları çözme</h2>
+<p>Bir paket sisteminin en karmaşık ve en önemli parçası bağımılık çözme kısmıdır.
+Bu kısımda paketler ihtiyaç duyulan bağımlılıkları ile beraber kurulacağı için hangi paketlerin gerekli olduğuna karar veren kısım burasıdır.
+Çalışma prensibi olarak sürekli kendini tekrarlayan bir fonksiyon bulunur ve bu fonksiyon tamamı hesaplanana kadar içi içe çalışmaya devam eder.</p>
+<p>Bir pakete ihtiyaç duyan tüm paketlere ters bağımlılık adı verilir. Bu yapıyı ağacın köklerine ve dallarına benzetebiliriz. Bir dala ulaşmak için geçmemiz gereken dallar bağımlılıkları bir dalı kestiğimizde etkilenen dallar işe ters bağımlılıkları ifade eder.</p>
+<pre class="code python literal-block">
+<span class="name">need_install</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+<span class="keyword">def</span> <span class="name function">resolve</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">):</span>
+    <span class="keyword">for</span> <span class="name">pkg</span> <span class="operator word">in</span> <span class="name">package</span><span class="operator">.</span><span class="name">dependencies</span><span class="punctuation">:</span>
+        <span class="keyword">if</span> <span class="name">pkg</span> <span class="operator word">not</span> <span class="operator word">in</span> <span class="name">need_install</span><span class="punctuation">:</span>
+            <span class="name">resolve</span><span class="punctuation">(</span><span class="name">pkg</span><span class="punctuation">)</span>
+    <span class="keyword">if</span> <span class="operator word">not</span> <span class="name">package</span><span class="operator">.</span><span class="name">is_installed</span><span class="punctuation">():</span>
+        <span class="name">need_install</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
+<span class="name">resolve</span><span class="punctuation">(</span><span class="name">xxxx</span><span class="punctuation">)</span>
+</pre>
+<p>Yukarıdaki örnekte bağımlılık ağacı bulma gösterilmiştir. Burada <strong>resolve</strong> fonksiyonu kendi kendisini iç içe çağırır.
+Paketlerin bağımlılıkları ve onun alt bağımlılıkları bu fonksiyona sokulur. Kurulu olmayanlar kurulacak paket listesine eklenir.
+Burada bazı durumlarda bu döngüsel işlem kısır döngüye girip sonsuz kere tekrar edebilir ve işlem bitmez.
+Bu duruma <strong>cycle dependency</strong> adı verilir. Genellikle kötü paketlenmiş paketlerden kaynaklanır. Kaynak tabanlı paket sistemlerinde bu durum çözülemezken ikili paket sistemlerinde derleme yapılmayacağı için aşağıdaki gibi bir çözüm bulunabilir.</p>
+<pre class="code python literal-block">
+<span class="name">need_install</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+<span class="name">cache_list</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+<span class="name">cycle_list</span> <span class="operator">=</span> <span class="punctuation">[]</span>
+
+<span class="keyword">def</span> <span class="name function">resolve</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">):</span>
+   <span class="keyword">if</span> <span class="name">package</span> <span class="operator word">in</span> <span class="name">cache_list</span><span class="punctuation">:</span>
+       <span class="keyword">if</span> <span class="name">package</span> <span class="operator word">not</span> <span class="operator word">in</span> <span class="name">cycle_list</span><span class="punctuation">:</span>
+           <span class="name">cycşe_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
+       <span class="keyword">return</span>
+   <span class="name">cache_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
+   <span class="operator">...</span>
+</pre>
+<p>Yukarıdaki örnekte her paket sadece bir kez resove fonksiyonundan geçer. Bu sayede cycle dependency sorunu aşılmış olur. Kaynak tabanlı paket sistemlerinde bu çözüm işe yaramayabilir. Bunun sebebi ise paketler derlenirken kullanılacak derleme bağımlılığı sırası hatalı hesaplanabilir. Bu sebeple paketçilerin cycle dependency sorununa sebep olmaması gereklidir.</p>
+<p>Yukarıdaki örnekte eğer cycle dependency sorunu oluştuysa cycle_list listesinde bunların listesi tutulur. Kaynak tabanlı paket listesinde bu listede bir eleman varsa derleme yapılamayacağı için hata verip çıkması sağlanmalıdır.</p>
+</div>
+</div>
 </div>
 </body>
 </html>
