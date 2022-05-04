@@ -235,17 +235,13 @@ Bu duruma **cycle dependency** adı verilir. Genellikle kötü paketlenmiş pake
 
 .. code-block:: python
 
-	need_install = []
-	cache_list = []
-	cycle_list = []
-	
-	def resolve(package):
-	   if package in cache_list:
-	       if package not in cycle_list:
-	           cycle_list.append(package)
-	       return
-	   cache_list.append(package)
-	   ...
+	...
+	if package in cache_list:
+	    if package not in cycle_list:
+	        cycle_list.append(package)
+	    return
+	cache_list.append(package)
+	...
 
 Yukarıdaki örnekte her paket sadece bir kez resove fonksiyonundan geçer.
 Bu sayede cycle dependency sorunu aşılmış olur. Kaynak tabanlı paket sistemlerinde bu çözüm işe yaramayabilir.

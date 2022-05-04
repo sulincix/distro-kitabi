@@ -567,17 +567,13 @@ Paketlerin bağımlılıkları ve onun alt bağımlılıkları bu fonksiyona sok
 Burada bazı durumlarda bu döngüsel işlem kısır döngüye girip sonsuz kere tekrar edebilir ve işlem bitmez.
 Bu duruma <strong>cycle dependency</strong> adı verilir. Genellikle kötü paketlenmiş paketlerden kaynaklanır. Kaynak tabanlı paket sistemlerinde bu durum çözülemezken ikili paket sistemlerinde derleme yapılmayacağı için aşağıdaki gibi bir çözüm bulunabilir.</p>
 <pre class="code python literal-block">
-<span class="name">need_install</span> <span class="operator">=</span> <span class="punctuation">[]</span>
-<span class="name">cache_list</span> <span class="operator">=</span> <span class="punctuation">[]</span>
-<span class="name">cycle_list</span> <span class="operator">=</span> <span class="punctuation">[]</span>
-
-<span class="keyword">def</span> <span class="name function">resolve</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">):</span>
-   <span class="keyword">if</span> <span class="name">package</span> <span class="operator word">in</span> <span class="name">cache_list</span><span class="punctuation">:</span>
-       <span class="keyword">if</span> <span class="name">package</span> <span class="operator word">not</span> <span class="operator word">in</span> <span class="name">cycle_list</span><span class="punctuation">:</span>
-           <span class="name">cycle_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
-       <span class="keyword">return</span>
-   <span class="name">cache_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
-   <span class="operator">...</span>
+<span class="operator">...</span>
+<span class="keyword">if</span> <span class="name">package</span> <span class="operator word">in</span> <span class="name">cache_list</span><span class="punctuation">:</span>
+    <span class="keyword">if</span> <span class="name">package</span> <span class="operator word">not</span> <span class="operator word">in</span> <span class="name">cycle_list</span><span class="punctuation">:</span>
+        <span class="name">cycle_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
+    <span class="keyword">return</span>
+<span class="name">cache_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
+<span class="operator">...</span>
 </pre>
 <p>Yukarıdaki örnekte her paket sadece bir kez resove fonksiyonundan geçer.
 Bu sayede cycle dependency sorunu aşılmış olur. Kaynak tabanlı paket sistemlerinde bu çözüm işe yaramayabilir.
