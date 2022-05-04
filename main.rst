@@ -242,7 +242,7 @@ Bu duruma **cycle dependency** adı verilir. Genellikle kötü paketlenmiş pake
 	def resolve(package):
 	   if package in cache_list:
 	       if package not in cycle_list:
-	           cycşe_list.append(package)
+	           cycle_list.append(package)
 	       return
 	   cache_list.append(package)
 	   ...

@@ -574,7 +574,7 @@ Bu duruma <strong>cycle dependency</strong> adı verilir. Genellikle kötü pake
 <span class="keyword">def</span> <span class="name function">resolve</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">):</span>
    <span class="keyword">if</span> <span class="name">package</span> <span class="operator word">in</span> <span class="name">cache_list</span><span class="punctuation">:</span>
        <span class="keyword">if</span> <span class="name">package</span> <span class="operator word">not</span> <span class="operator word">in</span> <span class="name">cycle_list</span><span class="punctuation">:</span>
-           <span class="name">cycşe_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
+           <span class="name">cycle_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
        <span class="keyword">return</span>
    <span class="name">cache_list</span><span class="operator">.</span><span class="name">append</span><span class="punctuation">(</span><span class="name">package</span><span class="punctuation">)</span>
    <span class="operator">...</span>
