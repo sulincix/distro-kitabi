@@ -329,6 +329,7 @@ Eğer dosya çakışması varsa buna **file confilct** adı verilir. Bu durum ol
 File conflict kaynak paketlerde daha henüz derleme işlemine başlanmadığı için tespit edilemeyeceği için kontrol edilmez.
 
 Dizinler için file confilct kontrolüne bakılmaz.
+
 .. code-block:: python
 
 	all_files = []
