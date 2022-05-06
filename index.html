@@ -659,6 +659,63 @@ File conflict kaynak paketlerde daha henüz derleme işlemine başlanmadığı i
 Bu diziye sırası ile kurulacak paketlerin dosyalarının yolları eklenmiştir.
 Eğer dosya birden fazla pakette varsa filde conflict varlığı tespit edilip işleme son verilmiştir.</p>
 </div>
+<div class="section" id="paketlerin-kurulmasi">
+<h2>Paketlerin kurulması</h2>
+<p>Paketler indirilip bütünlüğü de kontrol edildikten sonra paketlerin tek tek kurulması aşamasına geçilir.
+Bu aşamada paketlerin arşivleri açılır ve paketteki dosyalar kök dizine kopyalanır.
+Bazı dosyalar <strong>config</strong> dosyaları olduğu için mevcut olan dosyanın değiştirilmesi kullanıcının yaptığı ayarlamaları bozacağı için değiştirilmesi ya kullanıcıya sorulur yada değiştirilmez.</p>
+<pre class="code python literal-block">
+<span class="operator">...</span>
+<span class="keyword">for</span> <span class="name">pkg</span> <span class="operator word">in</span> <span class="name">need_install</span><span class="punctuation">:</span>
+    <span class="keyword">for</span> <span class="name">file</span> <span class="operator word">in</span> <span class="name">pkg</span><span class="operator">.</span><span class="name">files</span><span class="punctuation">:</span>
+        <span class="keyword">if</span> <span class="name">os</span><span class="operator">.</span><span class="name">path</span><span class="operator">.</span><span class="name">isfile</span><span class="punctuation">(</span><span class="name">file</span><span class="punctuation">):</span>
+            <span class="keyword">if</span> <span class="name">pkg</span><span class="operator">.</span><span class="name">is_config</span><span class="punctuation">(</span><span class="name">file</span><span class="punctuation">):</span>
+                <span class="keyword">continue</span>
+        <span class="name">new_file</span> <span class="operator">=</span> <span class="name">pkg</span><span class="operator">.</span><span class="name">extract</span><span class="punctuation">(</span><span class="name">file</span><span class="punctuation">)</span>
+        <span class="name">shutil</span><span class="operator">.</span><span class="name">copyfile</span><span class="punctuation">(</span><span class="name">new_file</span><span class="punctuation">,</span> <span class="name">file</span><span class="punctuation">)</span>
+<span class="operator">...</span>
+</pre>
+<p>Yukarıdaki örnekte paketin tüm dosyaları kök dizine kopyalandı. Fakat config dosyaları varsa e geçildi.
+Paket geçici dizine çıkartıldı ve geçici konumdaki dosya aslı olması gereken konuma kopyalandı.</p>
+<p>Paketlerdeki dosyalar root kullanıcısına ait olmalı ve dosya izninin 755 olması erekmektedir. Bunun haricinde dosya listesinde de dosya aitliği ve izinleri belirtilebilir.
+Dosya listesi aşağıdaki gibi olabilir:</p>
+<pre class="code yaml literal-block">
+<span class="name tag">files</span><span class="punctuation">:</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">/bin/bash</span><span class="punctuation">:</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">type</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">binary</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">md5sum</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">4883c32e5d4bed06efb4e669088a4a3a</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">owner</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">root</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">permission</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">0755</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">/etc/bashrc</span><span class="punctuation">:</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">type</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">config</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">md5sum</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">d8f3f334e72c0e30032eae1a1229aef1</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">owner</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">root</span><span class="whitespace">
+    </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">permission</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">0755</span><span class="whitespace">
+</span><span class="name namespace">...</span>
+</pre>
+<p>Yukarıda yaml formatta örnek paket listesi verilmiştir. Paket sistemimiz bu listeyi okur ve buna göre dosyaları yerleştirir ve izinlerini ayarlar.
+Ayrıca yukarıdaki örnekte paketteki dosyaların md5sum değeri de bulunmaktadır. Bu da paket geçici dizine açldıktan sonra kıyaslama amaçlı kullanılır ve paketin düzgün şekilde açıldığından emin olunduktan sonra dosya kök dizine koplalanır.</p>
+<p>İkili paket sistemlerinda paketlerin kurulma sırasının önemi yoktur. Fakat kaynak tabanlı paket sistemlerinde bu durum biraz farklıdır. Paketler kurulmadan önce derleneceği için derlemede kullanılacak paketlerin daha önce derlenmesi gerekmektedir. Bu yüzden bağımlılık ağacı çözerken kullanılan sıranın tersinden başlanarak derleme yapılır. Örneğin aşağıdaki gibi 5 tane paket bulnsun:</p>
+<pre class="code yaml literal-block">
+<span class="name tag">paket-a</span><span class="punctuation">:</span><span class="whitespace">
+  </span><span class="literal scalar plain">...</span><span class="whitespace">
+  </span><span class="literal scalar plain">- deps</span><span class="punctuation indicator">:</span><span class="whitespace"> </span><span class="literal scalar plain">paket-b paket-c</span><span class="whitespace">
+</span><span class="literal scalar plain">paket-b</span><span class="whitespace">
+  </span><span class="literal scalar plain">...</span><span class="whitespace">
+  </span><span class="literal scalar plain">- deps</span><span class="punctuation indicator">:</span><span class="whitespace"> </span><span class="literal scalar plain">paket-c</span><span class="whitespace">
+</span><span class="name tag">paket-c</span><span class="punctuation">:</span><span class="whitespace">
+  </span><span class="literal scalar plain">...</span><span class="whitespace">
+  </span><span class="literal scalar plain">-deps</span><span class="punctuation indicator">:</span><span class="whitespace">
+</span><span class="name tag">paket-d</span><span class="punctuation">:</span><span class="whitespace">
+  </span><span class="literal scalar plain">...</span><span class="whitespace">
+  </span><span class="literal scalar plain">- deps</span><span class="punctuation indicator">:</span><span class="whitespace"> </span><span class="literal scalar plain">paket-e</span><span class="whitespace">
+</span><span class="name tag">paket-e</span><span class="punctuation">:</span><span class="whitespace">
+  </span><span class="literal scalar plain">...</span><span class="whitespace">
+  </span><span class="literal scalar plain">- deps</span><span class="punctuation indicator">:</span>
+</pre>
+<p>Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: <strong>e &gt; c &gt; d &gt; b &gt; a</strong>  şeklinde olmalıdır. Bağımlılığı olmayan paketler en önce sonra ona hitiyaç duyanlar şeklinde sıra izlenir. Burada cycle dependency sorunu bu sebeple derlemeyi çıkmaza sürükleyen önemli bir sorundur.</p>
+<p>Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök dizine kurulmak yerine önce geçici dizine kurulup ardundan paket listesi çıkartılır ve daha sonra kök dizie kopyalanır. Bu sayede pakette hangi dosyaların bulunduğunn listesi tutulmuş olur.</p>
+</div>
 </div>
 </div>
 </body>
