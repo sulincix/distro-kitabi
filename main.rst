@@ -405,7 +405,7 @@ Ayrıca yukarıdaki örnekte paketteki dosyaların md5sum değeri de bulunmaktad
 	  ...
 	  - deps:
 
-Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: **e > c > d > b > a**  şeklinde olmalıdır. Bağımlılığı olmayan paketler en önce sonra ona hitiyaç duyanlar şeklinde sıra izlenir. Burada cycle dependency sorunu bu sebeple derlemeyi çıkmaza sürükleyen önemli bir sorundur.
+Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: **e > c > d > b > a**  şeklinde olmalıdır. Bağımlılığı olmayan paketler en önce sonra ona ihtiyaç duyanlar şeklinde sıra izlenir. Burada cycle dependency sorunu bu sebeple derlemeyi çıkmaza sürükleyen önemli bir sorundur.
 
 Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök dizine kurulmak yerine önce geçici dizine kurulup ardundan paket listesi çıkartılır ve daha sonra kök dizie kopyalanır. Bu sayede pakette hangi dosyaların bulunduğunn listesi tutulmuş olur.
 
