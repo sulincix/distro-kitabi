@@ -529,7 +529,7 @@ Bu durumun önüne geçebilmek için <strong>fakeroot</strong> ve <strong>unshar
 <li>Paketlerin indirilmesi</li>
 <li>Paketlerin bütünlüğünün kontrol edilmesi</li>
 <li>Paketlerin kurulması</li>
-<li>Paket kurulum sonrası işlemlerin yapılması</li>
+<li>Paketlerin yapılandırılması</li>
 <li>Yerel veritabanının güncellenmesi</li>
 </ul>
 <div class="section" id="paketlerin-sorgulanmasi">
@@ -716,8 +716,8 @@ Ayrıca yukarıdaki örnekte paketteki dosyaların md5sum değeri de bulunmaktad
 <p>Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: <strong>e &gt; c &gt; d &gt; b &gt; a</strong>  şeklinde olmalıdır. Bağımlılığı olmayan paketler en önce sonra ona ihtiyaç duyanlar şeklinde sıra izlenir. Burada cycle dependency sorunu bu sebeple derlemeyi çıkmaza sürükleyen önemli bir sorundur.</p>
 <p>Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök dizine kurulmak yerine önce geçici dizine kurulup ardundan paket listesi çıkartılır ve daha sonra kök dizie kopyalanır. Bu sayede pakette hangi dosyaların bulunduğunn listesi tutulmuş olur.</p>
 </div>
-<div class="section" id="paket-kurulum-sonrasi-islemlerin-yapilmasi">
-<h2>Paket kurulum sonrası işlemlerin yapılması</h2>
+<div class="section" id="paketlerin-yapilandirilmasi">
+<h2>Paketlerin yapılandırılması</h2>
 <p>Paket sistemi paketleri disk üzerine kurduktan sonra bazı komutların çalıştırılması gereklidir.
 Örneğin sisteme yeni bir yazı tipi kurulduğunda yazı tipi önbelleği güncellenmelidir.
 Bunun için ise <strong>fc-cache -f</strong> komutu kullanılır. Bu gibi senaryolarda paketlern içerisinde paket kurma ve kaldırmada gerekli komutlar bulunur.
@@ -735,6 +735,31 @@ Bununla birlikte bu eylemler paketin içinde tutulmak yerine paket sistemine ön
 </pre>
 <p>Yukarıdaki örnekte paketin kurulum sonrası eylemi varsa çalıştırıldı. Eğer çalıştırıken sorun meydana geldiyse hata mesajı verdi ve kapandı.
 Paket sistemimiz prıgramı sonlandırmak yerine ayarlanamamış paketlerin listesini sonradan ayarlanabilmesi adına bir yerde tutabilir.</p>
+<p>Diğer bir yol da önceden tanımlanan komutlardır. Bunun için bir dizinin veya dosyanın son değiçiklik tarihi ile yerel veritabanındaki farklı mı diye bakılabilir.
+Örneğin /usr/share/fonts dizininin değişiklik tarihi değişmişse dizin içerisine dosya eklenmiş veya dosya silinmiştir. Bu durumda ilgili komut çalıştırılır.</p>
+<pre class="code python literal-block">
+<span class="operator">...</span>
+<span class="keyword">def</span> <span class="name function">post_operation</span><span class="punctuation">(</span><span class="name">path</span><span class="punctuation">,</span> <span class="name">command</span><span class="punctuation">):</span>
+    <span class="keyword">if</span> <span class="name">get_changes_time</span><span class="punctuation">(</span><span class="name">path</span><span class="punctuation">)</span> <span class="operator">&gt;</span> <span class="name">get_current_changes_time</span><span class="punctuation">(</span><span class="name">path</span><span class="punctuation">):</span>
+        <span class="name">os</span><span class="operator">.</span><span class="name">system</span><span class="punctuation">(</span><span class="name">command</span><span class="punctuation">)</span>
+        <span class="name">set_current_changes_time</span><span class="punctuation">(</span><span class="name">path</span><span class="punctuation">,</span> <span class="name">time</span><span class="operator">.</span><span class="name">time</span><span class="punctuation">())</span>
+<span class="name">post_operation</span><span class="punctuation">(</span><span class="literal string double">&quot;/usr/share/fonts&quot;</span><span class="punctuation">,</span> <span class="literal string double">&quot;fc-cache -f&quot;</span><span class="punctuation">)</span>
+<span class="operator">...</span>
+</pre>
+<p>Yukarıdaki örnekte hedef dizinin değişiklik tarihi daha güncel ise komut çalıştırılır.
+Komut bittikten sonra dizinin değişikli tarihi şu anki tarih olarak güncellenir.
+Bu sayede sadece değişiklik varsa komutun çalışması sağlanır.</p>
+<p>Paket sonrası işlemlerin sırası paket bağımlılık ağacı sırası şeklinde olmalıdır. Kısaca ilk kurulan paket ilk yapılandırılır ilkesi gözetilir.</p>
+</div>
+<div class="section" id="yerel-veri-tabaninin-guncellenmesi">
+<h2>Yerel veri tabanının güncellenmesi</h2>
+<p>Yerel veritabanı hangi paketlerin kurulu olduğunu ve hangi paketin hangi dosyaya sahip olduğu gibi bilgileri taşır.
+Bunula birlikte depo indexini ve paketlerin yapılandırmalarını da kapsar.
+Yerel veri tabanı herhangi bir işlem çalıştırılmadan önce okunur ve mevcut duruma göre işlem gerçekleştirilir.</p>
+<p>Yerel veri tabanı güncelleme işleminin tamamı en son yapılmaz.
+Bunu yerine paketlerle ilgili olan veriler (kurulu paket listesi, paket dosya listesi vb.) her paket kurulduğunda güncellenir.
+Bu sayede işlem yarıda kesilirse veya sistemde ani olarak güç kaybı gerçekleşirse sistemin nerede kaldığı belli olur ve kurtarmak mümkün olur.
+Bununla birlikte eğer index güncelleme işlemi yapılırsa yerel veri tabanı yeni indirilen indexi kullanmak için indirme sonunda da güncellenir.</p>
 </div>
 </div>
 </div>

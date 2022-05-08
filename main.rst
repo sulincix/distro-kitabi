@@ -190,7 +190,7 @@ Paket yönetim sistemlerinde paket kurma ve kaldırma işlemleri aşağıdaki s�
 * Paketlerin indirilmesi
 * Paketlerin bütünlüğünün kontrol edilmesi
 * Paketlerin kurulması
-* Paket kurulum sonrası işlemlerin yapılması
+* Paketlerin yapılandırılması
 * Yerel veritabanının güncellenmesi
 
 Paketlerin sorgulanması
@@ -409,8 +409,8 @@ Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: **e 
 
 Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök dizine kurulmak yerine önce geçici dizine kurulup ardundan paket listesi çıkartılır ve daha sonra kök dizie kopyalanır. Bu sayede pakette hangi dosyaların bulunduğunn listesi tutulmuş olur.
 
-Paket kurulum sonrası işlemlerin yapılması
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paketlerin yapılandırılması
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Paket sistemi paketleri disk üzerine kurduktan sonra bazı komutların çalıştırılması gereklidir.
 Örneğin sisteme yeni bir yazı tipi kurulduğunda yazı tipi önbelleği güncellenmelidir.
 Bunun için ise **fc-cache -f** komutu kullanılır. Bu gibi senaryolarda paketlern içerisinde paket kurma ve kaldırmada gerekli komutlar bulunur.
@@ -430,5 +430,35 @@ Bununla birlikte bu eylemler paketin içinde tutulmak yerine paket sistemine ön
 
 Yukarıdaki örnekte paketin kurulum sonrası eylemi varsa çalıştırıldı. Eğer çalıştırıken sorun meydana geldiyse hata mesajı verdi ve kapandı.
 Paket sistemimiz prıgramı sonlandırmak yerine ayarlanamamış paketlerin listesini sonradan ayarlanabilmesi adına bir yerde tutabilir.
+
+Diğer bir yol da önceden tanımlanan komutlardır. Bunun için bir dizinin veya dosyanın son değiçiklik tarihi ile yerel veritabanındaki farklı mı diye bakılabilir.
+Örneğin /usr/share/fonts dizininin değişiklik tarihi değişmişse dizin içerisine dosya eklenmiş veya dosya silinmiştir. Bu durumda ilgili komut çalıştırılır.
+
+.. code-block:: python
+
+	...
+	def post_operation(path, command):
+	    if get_changes_time(path) > get_current_changes_time(path):
+	        os.system(command)
+	        set_current_changes_time(path, time.time())
+	post_operation("/usr/share/fonts", "fc-cache -f")
+	...
+
+Yukarıdaki örnekte hedef dizinin değişiklik tarihi daha güncel ise komut çalıştırılır. 
+Komut bittikten sonra dizinin değişikli tarihi şu anki tarih olarak güncellenir.
+Bu sayede sadece değişiklik varsa komutun çalışması sağlanır.
+
+Paket sonrası işlemlerin sırası paket bağımlılık ağacı sırası şeklinde olmalıdır. Kısaca ilk kurulan paket ilk yapılandırılır ilkesi gözetilir.
+
+Yerel veri tabanının güncellenmesi
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Yerel veritabanı hangi paketlerin kurulu olduğunu ve hangi paketin hangi dosyaya sahip olduğu gibi bilgileri taşır.
+Bunula birlikte depo indexini ve paketlerin yapılandırmalarını da kapsar.
+Yerel veri tabanı herhangi bir işlem çalıştırılmadan önce okunur ve mevcut duruma göre işlem gerçekleştirilir.
+
+Yerel veri tabanı güncelleme işleminin tamamı en son yapılmaz.
+Bunu yerine paketlerle ilgili olan veriler (kurulu paket listesi, paket dosya listesi vb.) her paket kurulduğunda güncellenir.
+Bu sayede işlem yarıda kesilirse veya sistemde ani olarak güç kaybı gerçekleşirse sistemin nerede kaldığı belli olur ve kurtarmak mümkün olur.
+Bununla birlikte eğer index güncelleme işlemi yapılırsa yerel veri tabanı yeni indirilen indexi kullanmak için indirme sonunda da güncellenir.
 
 
