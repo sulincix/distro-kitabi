@@ -524,8 +524,13 @@ Bu dosyalar paket sistemi tarafından farklı amaçlar için kullanılabilir vey
 
 Bölüm 4: Linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi
 ---------------------------------------------------------------------
-Bir linux dağıtımını oluşturan tüm parçalar paketler yardımı olur. Bu bölüm linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi anlatılacaktır.
+Bir linux dağıtımını oluşturan tüm parçalar paketlerden oluşur. Bu bölüm linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi anlatılacaktır.
 
 Linux dağıtımının temel yapısı
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Sıradan bir linux dağıtımını 4 temel parçada ele alabiliriz.
 
+* kernel (linux)
+* initramfs
+* servis yöneticisi
+* masaüstü ortamı
