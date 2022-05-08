@@ -461,4 +461,17 @@ Bunu yerine paketlerle ilgili olan veriler (kurulu paket listesi, paket dosya li
 Bu sayede işlem yarıda kesilirse veya sistemde ani olarak güç kaybı gerçekleşirse sistemin nerede kaldığı belli olur ve kurtarmak mümkün olur.
 Bununla birlikte eğer index güncelleme işlemi yapılırsa yerel veri tabanı yeni indirilen indexi kullanmak için indirme sonunda da güncellenir.
 
+Bölüm 3: Paket dosyası formatı
+------------------------------
+Paket sistemleri belirli bir paket formatını kullanır. Örneğin **deb**, **rpm**, **apk** gibi formatlar bulunur. Bu bölümde örnek bir paket formatı üzerinden paket formatının iç yapısını anlatılacaktır.
 
+Paket dosyaları özünde birer arşiv dosyasıdır ve belli bir hiyerarşiye göre dizilir. 3 temel parçadan oluşur:
+
+* Manifest dosyası
+* Dosya listesi
+* Dosya arşivi
+
+Manifest dosyası
+^^^^^^^^^^^^^^^^
+Paketlerin manifest dosyalar paketin ne olduğunu, nelere bağımlı olduğunu, nelerle çakıştığı gibi bilgileri içeren paketin kimlik kartı niteliğinde olan dosyasıdır.
+Bu dosya yaml, json, xml gibi formatlarda bulunur.
