@@ -411,7 +411,7 @@ Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök d
 
 Paket kurulum sonrası işlemlerin yapılması
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-paket sistemi paketleri disk üzerine kurduktan sonra bazı komutların çalıştırılması gereklidir.
+Paket sistemi paketleri disk üzerine kurduktan sonra bazı komutların çalıştırılması gereklidir.
 Örneğin sisteme yeni bir yazı tipi kurulduğunda yazı tipi önbelleği güncellenmelidir.
 Bunun için ise **fc-cache -f** komutu kullanılır. Bu gibi senaryolarda paketlern içerisinde paket kurma ve kaldırmada gerekli komutlar bulunur.
 Öneğin deb paketlerinde bu işlem **postinst**, **preinst**, **preinst**, **prerm** dosyaları ile gerçekleştirilir.
