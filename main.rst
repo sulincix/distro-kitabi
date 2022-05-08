@@ -514,8 +514,18 @@ Paket yapılandırma aşamasındayken izinler ayarlanabilir.
 Paket arşivi
 ^^^^^^^^^^^^
 Bu dosya paketimizin tüm dosyalarını içeren dosyadır. Bu dosya genellikle paketin boyutunu küçültmek amacı ile sıkıştırılmıştır.
+
 Paket arşivi ve paket listesi metapaket adı verilen sadece bağımılık belirten paketlerde bulunmak zorunda değildir. Bu gibi paketlerin sadece manifesti bulunur ve paket sadece bağımlılıkları yardımı ile diğerlerinin de kurulmasını sağlar. Buna en iyi örnek masaüstü metapaketleridir.
 
 Ek dosyalar
 ^^^^^^^^^^^
+Paketin içerisinde ek olarak yapılandırma aşamasıda kullanılan dosyalar paketin simgesi paketin derleme talimatı gibi dosyalar yer alabilir.
+Bu dosyalar paket sistemi tarafından farklı amaçlar için kullanılabilir veya herhangi bir işlevi olmayan dosyalar da olabilirler. 
+
+Bölüm 4: Linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi
+---------------------------------------------------------------------
+Bir linux dağıtımını oluşturan tüm parçalar paketler yardımı olur. Bu bölüm linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi anlatılacaktır.
+
+Linux dağıtımının temel yapısı
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
