@@ -716,6 +716,26 @@ Ayrıca yukarıdaki örnekte paketteki dosyaların md5sum değeri de bulunmaktad
 <p>Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: <strong>e &gt; c &gt; d &gt; b &gt; a</strong>  şeklinde olmalıdır. Bağımlılığı olmayan paketler en önce sonra ona ihtiyaç duyanlar şeklinde sıra izlenir. Burada cycle dependency sorunu bu sebeple derlemeyi çıkmaza sürükleyen önemli bir sorundur.</p>
 <p>Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök dizine kurulmak yerine önce geçici dizine kurulup ardundan paket listesi çıkartılır ve daha sonra kök dizie kopyalanır. Bu sayede pakette hangi dosyaların bulunduğunn listesi tutulmuş olur.</p>
 </div>
+<div class="section" id="paket-kurulum-sonrasi-islemlerin-yapilmasi">
+<h2>Paket kurulum sonrası işlemlerin yapılması</h2>
+<p>paket sistemi paketleri disk üzerine kurduktan sonra bazı komutların çalıştırılması gereklidir.
+Örneğin sisteme yeni bir yazı tipi kurulduğunda yazı tipi önbelleği güncellenmelidir.
+Bunun için ise <strong>fc-cache -f</strong> komutu kullanılır. Bu gibi senaryolarda paketlern içerisinde paket kurma ve kaldırmada gerekli komutlar bulunur.
+Öneğin deb paketlerinde bu işlem <strong>postinst</strong>, <strong>preinst</strong>, <strong>preinst</strong>, <strong>prerm</strong> dosyaları ile gerçekleştirilir.
+Bununla birlikte bu eylemler paketin içinde tutulmak yerine paket sistemine önceden tanımlanarak eklenebilir.</p>
+<pre class="code shell literal-block">
+...
+<span class="keyword">if</span> <span class="operator">[[</span> -f /var/lib/pkgsys/<span class="literal string interpol">${</span><span class="name variable">pkgname</span><span class="literal string interpol">}</span>/post-install.sh <span class="operator">]]</span> <span class="punctuation">;</span> <span class="keyword">then</span>
+    <span class="keyword">if</span> ! /var/lib/pkgsys/<span class="literal string interpol">${</span><span class="name variable">pkgname</span><span class="literal string interpol">}</span>/post-install.sh <span class="punctuation">;</span> <span class="keyword">then</span>
+        <span class="name builtin">echo</span> <span class="literal string double">&quot;Package </span><span class="literal string interpol">${</span><span class="name variable">pkgname</span><span class="literal string interpol">}</span><span class="literal string double"> not configured yet!&quot;</span>
+        <span class="name builtin">exit</span> <span class="literal number">1</span>
+    <span class="keyword">if</span>
+<span class="keyword">fi</span>
+...
+</pre>
+<p>Yukarıdaki örnekte paketin kurulum sonrası eylemi varsa çalıştırıldı. Eğer çalıştırıken sorun meydana geldiyse hata mesajı verdi ve kapandı.
+Paket sistemimiz prıgramı sonlandırmak yerine ayarlanamamış paketlerin listesini sonradan ayarlanabilmesi adına bir yerde tutabilir.</p>
+</div>
 </div>
 </div>
 </body>

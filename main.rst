@@ -409,4 +409,26 @@ Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: **e 
 
 Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök dizine kurulmak yerine önce geçici dizine kurulup ardundan paket listesi çıkartılır ve daha sonra kök dizie kopyalanır. Bu sayede pakette hangi dosyaların bulunduğunn listesi tutulmuş olur.
 
+Paket kurulum sonrası işlemlerin yapılması
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+paket sistemi paketleri disk üzerine kurduktan sonra bazı komutların çalıştırılması gereklidir.
+Örneğin sisteme yeni bir yazı tipi kurulduğunda yazı tipi önbelleği güncellenmelidir.
+Bunun için ise **fc-cache -f** komutu kullanılır. Bu gibi senaryolarda paketlern içerisinde paket kurma ve kaldırmada gerekli komutlar bulunur.
+Öneğin deb paketlerinde bu işlem **postinst**, **preinst**, **preinst**, **prerm** dosyaları ile gerçekleştirilir.
+Bununla birlikte bu eylemler paketin içinde tutulmak yerine paket sistemine önceden tanımlanarak eklenebilir.
+
+.. code-block:: shell
+
+	...
+	if [[ -f /var/lib/pkgsys/${pkgname}/post-install.sh ]] ; then
+	    if ! /var/lib/pkgsys/${pkgname}/post-install.sh ; then
+	        echo "Package ${pkgname} not configured yet!"
+	        exit 1
+	    if
+	fi
+	...
+
+Yukarıdaki örnekte paketin kurulum sonrası eylemi varsa çalıştırıldı. Eğer çalıştırıken sorun meydana geldiyse hata mesajı verdi ve kapandı.
+Paket sistemimiz prıgramı sonlandırmak yerine ayarlanamamış paketlerin listesini sonradan ayarlanabilmesi adına bir yerde tutabilir.
+
 
