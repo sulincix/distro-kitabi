@@ -775,6 +775,43 @@ Bununla birlikte eğer index güncelleme işlemi yapılırsa yerel veri tabanı 
 <h2>Manifest dosyası</h2>
 <p>Paketlerin manifest dosyalar paketin ne olduğunu, nelere bağımlı olduğunu, nelerle çakıştığı gibi bilgileri içeren paketin kimlik kartı niteliğinde olan dosyasıdır.
 Bu dosya yaml, json, xml gibi formatlarda bulunur.</p>
+<pre class="code yaml literal-block">
+<span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">package</span><span class="punctuation">:</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">name</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">bash</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">version</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">5.0</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">archive-hash</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">d1a9a848bcd295183cbec5ee500b406f</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">dependencies</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">ncurses readline</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">conflicts</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">bash-unstable</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">architecture</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">x86_64</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">description </span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">GNU bash shell</span><span class="whitespace">
+  </span><span class="punctuation indicator">-</span><span class="whitespace"> </span><span class="name tag">component</span><span class="punctuation">:</span><span class="whitespace"> </span><span class="literal scalar plain">sys-app/core</span>
+</pre>
+<p>Yukarıdaki örnekte manifest yaml formatında verilmiştir. Paketin adı sürümü gibi bilgilerin yanında arşivin md5sum değeri de yer almaktadır.
+Bu değer paket açılmadan önceki bütünlük kontrolü için kullanılır. Eğer tutarlı değilse arşiv bozuk olarak indirilmiştir.
+componont olarak gösterilen değer sistemin hangi parçasına ait olduğunu ayırt etmek için eklenen bir parametredir.
+Buna ek olarak isteğer bağlı farklı ek değerler eklenebilir.</p>
+<p>Mainfest dosyası index oluşturulurken arşivden çıkartılır ve uc uca eklenerek index üretilir. Bu sebeple paket içerisinde genellikle sıkıştırılmamış halde bulunur.</p>
+</div>
+<div class="section" id="dosya-listesi">
+<h2>Dosya listesi</h2>
+<p>Paketlerin dosya listeleri her dosyanın hash değerini kime ait olduğunu ve nerede yer aldığını belirten listedir.
+Bu dosya manifest ile birleşik olarak tek dosya halinde de olabilir fakat bu index alırken boyutu ciddi ölçüde arttıracağı için genellikle tercih edilmez.</p>
+<p>Paket listelerinde dosya aitliği ve izni belirtilmek zorunda değildir. Temel olarak tüm dosyalar roota ait ve izin numarası 755 kabul ediliebilir ve paket kurulumu sonrası işlem olarak gerekli izinler değiştirilebilir.</p>
+<pre class="code yaml literal-block">
+<span class="literal scalar plain">d1a9a848bcd295183cbec5ee500b406f  /bin/bash</span><span class="whitespace">
+</span><span class="literal scalar plain">d8f3f334e72c0e30032eae1a1229aef1  /etc/bashrc</span><span class="whitespace">
+</span><span class="name namespace">...</span>
+</pre>
+<p>Yukarıdaki örnekte paket listesinde sadece md5sum değerleri ve dosya konumu yer almaktadır. Bu tür listelerde dosya aitliği e izni gibi değerler yer almaz.
+Paket yapılandırma aşamasındayken izinler ayarlanabilir.</p>
+</div>
+<div class="section" id="paket-arsivi">
+<h2>Paket arşivi</h2>
+<p>Bu dosya paketimizin tüm dosyalarını içeren dosyadır. Bu dosya genellikle paketin boyutunu küçültmek amacı ile sıkıştırılmıştır.
+Paket arşivi ve paket listesi metapaket adı verilen sadece bağımılık belirten paketlerde bulunmak zorunda değildir. Bu gibi paketlerin sadece manifesti bulunur ve paket sadece bağımlılıkları yardımı ile diğerlerinin de kurulmasını sağlar. Buna en iyi örnek masaüstü metapaketleridir.</p>
+</div>
+<div class="section" id="ek-dosyalar">
+<h2>Ek dosyalar</h2>
 </div>
 </div>
 </div>

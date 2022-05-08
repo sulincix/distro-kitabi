@@ -474,4 +474,48 @@ Paket dosyaları özünde birer arşiv dosyasıdır ve belli bir hiyerarşiye g�
 Manifest dosyası
 ^^^^^^^^^^^^^^^^
 Paketlerin manifest dosyalar paketin ne olduğunu, nelere bağımlı olduğunu, nelerle çakıştığı gibi bilgileri içeren paketin kimlik kartı niteliğinde olan dosyasıdır.
-Bu dosya yaml, json, xml gibi formatlarda bulunur.
+Bu dosya yaml, json, xml gibi formatlarda bulunur. 
+
+.. code-block:: yaml
+
+	- package:
+	  - name: bash
+	  - version: 5.0
+	  - archive-hash: d1a9a848bcd295183cbec5ee500b406f
+	  - dependencies: ncurses readline
+	  - conflicts: bash-unstable
+	  - architecture: x86_64
+	  - description : GNU bash shell
+	  - component: sys-app/core
+
+Yukarıdaki örnekte manifest yaml formatında verilmiştir. Paketin adı sürümü gibi bilgilerin yanında arşivin md5sum değeri de yer almaktadır.
+Bu değer paket açılmadan önceki bütünlük kontrolü için kullanılır. Eğer tutarlı değilse arşiv bozuk olarak indirilmiştir.
+componont olarak gösterilen değer sistemin hangi parçasına ait olduğunu ayırt etmek için eklenen bir parametredir. 
+Buna ek olarak isteğer bağlı farklı ek değerler eklenebilir.
+
+Mainfest dosyası index oluşturulurken arşivden çıkartılır ve uc uca eklenerek index üretilir. Bu sebeple paket içerisinde genellikle sıkıştırılmamış halde bulunur.
+
+Dosya listesi
+^^^^^^^^^^^^^
+Paketlerin dosya listeleri her dosyanın hash değerini kime ait olduğunu ve nerede yer aldığını belirten listedir.
+Bu dosya manifest ile birleşik olarak tek dosya halinde de olabilir fakat bu index alırken boyutu ciddi ölçüde arttıracağı için genellikle tercih edilmez. 
+
+Paket listelerinde dosya aitliği ve izni belirtilmek zorunda değildir. Temel olarak tüm dosyalar roota ait ve izin numarası 755 kabul ediliebilir ve paket kurulumu sonrası işlem olarak gerekli izinler değiştirilebilir.
+
+.. code-block:: yaml
+
+	d1a9a848bcd295183cbec5ee500b406f  /bin/bash
+	d8f3f334e72c0e30032eae1a1229aef1  /etc/bashrc
+	...
+
+Yukarıdaki örnekte paket listesinde sadece md5sum değerleri ve dosya konumu yer almaktadır. Bu tür listelerde dosya aitliği e izni gibi değerler yer almaz.
+Paket yapılandırma aşamasındayken izinler ayarlanabilir.
+
+Paket arşivi
+^^^^^^^^^^^^
+Bu dosya paketimizin tüm dosyalarını içeren dosyadır. Bu dosya genellikle paketin boyutunu küçültmek amacı ile sıkıştırılmıştır.
+Paket arşivi ve paket listesi metapaket adı verilen sadece bağımılık belirten paketlerde bulunmak zorunda değildir. Bu gibi paketlerin sadece manifesti bulunur ve paket sadece bağımlılıkları yardımı ile diğerlerinin de kurulmasını sağlar. Buna en iyi örnek masaüstü metapaketleridir.
+
+Ek dosyalar
+^^^^^^^^^^^
+
