@@ -8,6 +8,7 @@
 pages:
   stage: deploy
   script:
+    - apt install python3-docutils -y
     - mkdir .public
     - make
     - cp -r * .public
