@@ -9,9 +9,10 @@ pages:
   stage: deploy
   script:
     - apt update
-    - apt install python3-docutils -y
+    - apt install python3-docutils chromium -y
     - mkdir .public
     - make
+    - chromium --headless --disable-gpu --print-to-pdf index.html && mv output.pdf distro-kitabi.pdf
     - cp -r * .public
     - mv .public public
   artifacts:
