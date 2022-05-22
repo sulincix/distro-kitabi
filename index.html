@@ -962,13 +962,13 @@ find /lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)
 </pre>
 <p>Daha sonra initramfs içerisindeki /init içinde aşağıdaki komutlar çalıştırılmalıdır.</p>
 <pre class="code shell literal-block">
-    <span class="comment single"># systemd-udev için
+<span class="comment single"># systemd-udev için
 </span>systemd-udevd --daemon
 <span class="comment single"># eudev için
-</span>    udevd --daemon
-    <span class="comment single"># Her ikisi için
-</span>    udevadm trigger -c add
-    udevadm settle
+</span>udevd --daemon
+<span class="comment single"># Her ikisi için
+</span>udevadm trigger -c add
+udevadm settle
 </pre>
 <p>Eğer systemd kullanmayan bir dağıtım geliştirecekseniz veya initramfs dosyasının daha az boyutlu olmasını istiyorsanız <strong>eudev</strong> tercih etmelisiniz.</p>
 </div>

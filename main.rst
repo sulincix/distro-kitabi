@@ -704,8 +704,8 @@ Daha sonra initramfs içerisindeki /init içinde aşağıdaki komutlar çalışt
 .. code-block:: shell
 
 	# systemd-udev için
-    systemd-udevd --daemon
-    # eudev için
+	systemd-udevd --daemon
+	# eudev için
 	udevd --daemon
 	# Her ikisi için
 	udevadm trigger -c add
