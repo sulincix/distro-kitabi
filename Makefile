@@ -1,4 +1,4 @@
-all: build git
+all: build
 git:
 	git add .
 	git commit -m "update"

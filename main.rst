@@ -1,6 +1,6 @@
-Paket Yönetim Sistemi
+Linux dağıtımı kitabı
 =====================
-Bu dokümanda paket yönetim sisteminin yapısı ve nasıl geliştirileceği anlatılmaktadır.
+Bu dokümanda paket yönetim sisteminin yapısı ve nasıl geliştirileceği ve bağımsız tabanlı bir dağıtım tasarımı konuları anlatılmaktadır.
 Bu dokümanda örnek olması açısından **python** ve **bash** programlama dilleri kullanılacaktır.
 Eğer yeterli programlama yeteneğiniz olduğundan emin değilseniz dokümanı okumaya başlamadan önce programlama becerilerinizi gözden geçirebilirsiniz.
 
