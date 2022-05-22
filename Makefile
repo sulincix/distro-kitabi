@@ -4,4 +4,4 @@ git:
 	git commit -m "update"
 	git push -u
 build:
-	rst2html.py main.rst > index.html
+	rst2html main.rst > index.html
