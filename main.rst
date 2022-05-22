@@ -676,7 +676,7 @@ Modülleri yüklemek için elle **modprobe** komutu kullanılabilir. Bu sayede i
 .. code-block:: shell
 
 	...
-	find /lib/modules/$(uname -r)/kernel -type f | while read module ; do
+	find /lib/modules/$(uname -r)/ -type f | while read module ; do
 	    module_name=$(basename "$module"| sed "s/\..*//g")
 	    if echo ${module_name} | grep "debug" ; then
 	        : ignore debug module
