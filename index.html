@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+<meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 <title>Paket Yönetim Sistemi</title>
 <style type="text/css">
 
@@ -828,6 +828,157 @@ Bu dosyalar paket sistemi tarafından farklı amaçlar için kullanılabilir vey
 <li>servis yöneticisi</li>
 <li>masaüstü ortamı</li>
 </ul>
+<div class="section" id="kernel">
+<h3>Kernel</h3>
+<p>Kernel sistemin en temel parçasıdır. Donanım ile iletişimi kurar ve sistemin işlevlerinin düzgün yerine getirilmesini sağlar. GNU/Linux dediğimizde GNU sistemi ve Linux çekirdeği kullanılmıx anlamına gelir. Çekirdek tek başına işletim sistemi değildir. Kernel aşağıdaki dizinlerde bulunur.</p>
+<pre class="code shell literal-block">
+/boot/vmlinuz-xxx
+/lib/modules/xxx
+/usr/src/linux-xxx
+</pre>
+<p>Burada xxx ile belirtilen kernelin sürümüdür. Bir sistemde birden çok kernel bulunabilir ve sistem açılırkein hangisi ile çalışacağı seçilebilir.</p>
+<p>Linux derlemek için öncelikle <strong>make menuconfig</strong> komutu kullanılarak kernel yapılandırılır. Veya <strong>make defconfig</strong> kulanılarak varsayılan ayarlarda yapılandırılabilir.
+Ardından vmlinuz dosyamızı derlemek için <strong>make bzImage</strong> kullanılır. Bu işlemden sonra kernelin ana dosyası oluşturulmuş olur. Kernel modüler yapıya sahiptir ve modüller sayesinde çalışma sırasında sürücüler açılıp kapatılabilir. Bu sayede kaynaktan tasarruf edilmiş olur. Modülleri derlemek için <strong>make modules</strong> kullanılır. Aşağıda özet olarak kernel derleme örneği yer almaktadır.</p>
+<pre class="code shell literal-block">
+make menuconfig
+make bzImage -j24
+make modules -j24
+</pre>
+<p>Derleme yaparken birden çok işlemci çekirdeğini kullanmak için <strong>-j4</strong> eklenebilir. burdada 4 işlem sayısıdır ve işlemci çekirdeği sayısı kadar olması önerilir.</p>
+<p>kernel yapılandırma dosyası kaynak kodun içerisinde <strong>.config</strong> dosyası olarak bulunur. Bu dosyayı yapılandırmak yerine hazır olarak ekleyerek kullanabilirsiniz.</p>
+<p>Derlenmiş olan kernelimizi sisteme yüklemek için önce vmlinuz dosyamızı kopyalamamız gereklidir. vmlinuz dosyamız arch/x86/boot içinde yer alır. Daha sonra <strong>make modules_install</strong> kullanılarak modüller yüklenir. En son olarak kernelin kaynak kodunun bir kopyasını /usr/src içine kopyalamamız gereklidir. Bunun sebebi ise daha sonradan kurulması gereken herhangi bir sürücü oluştuğunda kernelin kaynak kodundan yararlanılmasıdır. Kernelimizin libc header dosyalarını yüklemek için <strong>make headers_install</strong> kullanılır.</p>
+<pre class="code shell literal-block">
+install arch/x86/boot/bzImage <span class="name variable">$DESTDIR</span>/boot/vmlinuz-5.17
+make modules_install <span class="name variable">INSTALL_MOD_PATH</span><span class="operator">=</span><span class="name variable">$DESTDIR</span>
+make headers_install <span class="name variable">INSTALL_HDR_PATH</span><span class="operator">=</span><span class="name variable">$DESTDIR</span>/usr
+cp -rf linux-5.17-source <span class="name variable">$DESTDIR</span>/usr/src/linux-headers-5.17
+</pre>
+<p>Kernelin derlenmesi ve kurulması ile ilgili dağıtımdan dağıtıma farklılıklar bulunabilir. Sistemin çalışması için modüller ve vmlinuz dosyası gereklidir. Diğer dosyalar ise modül ve uygulama derlemek için kullanılır.</p>
+</div>
+<div class="section" id="initramfs">
+<h3>initramfs</h3>
+<p>initramfs dosyası kernel ile birlikte kullanılan belleğe ilk yüklenen dosyadır. Bu dosyanın görevi sistemin kurulu olduğu diski tanımak için gereken modülleri yüklemek ve sistemi başlatmaktır. Bu dosya <strong>/boot/initrd.img-xxx</strong> konumunda yer alır.
+initramfs dosyası üretmek için öncelikle bir dizin oluşturulur. Paketlenen dosya gzip veya lzma ile sıkmıştırılabilir veya sıkıştırılmadan da kullanılabilir.  Bu dizine gerekli dosyalar eklenir ve aşağıdaki gibi paketlenir.</p>
+<pre class="code shell literal-block">
+<span class="name builtin">cd</span> /initrd/dizini/
+find . <span class="punctuation">|</span> cpio -o -H newc <span class="punctuation">|</span> gzip -9 &gt; /boot/initrd.img-xxx
+</pre>
+<p>Kernel initrd dosyasını ram üzerine yükler ve içerisindeki /init dosyasını çalıştırır.</p>
+<p>Örneğin aşağıdaki gibi bir C dosyamız olsun.</p>
+<p>..code-block:: C</p>
+<blockquote>
+<p>#include &lt;stdio.h&gt;
+int main(){</p>
+<div class="system-message">
+<p class="system-message-title">System Message: ERROR/3 (<tt class="docutils">main.rst</tt>, line 593)</p>
+Unexpected indentation.</div>
+<blockquote>
+printf(&quot;Hello World!n&quot;);
+while(1); // programın bitmesini engellemek için
+return 0;</blockquote>
+<div class="system-message">
+<p class="system-message-title">System Message: WARNING/2 (<tt class="docutils">main.rst</tt>, line 596)</p>
+Block quote ends without a blank line; unexpected unindent.</div>
+<p>}</p>
+</blockquote>
+<p>Bu dosyayı static olarak derleyelim ve initramfs dosyasının içine koyup paketleyelim.</p>
+<pre class="code shell literal-block">
+mkdir /tmp/initrd
+<span class="name builtin">cd</span> /tmp/initrd
+gcc -o /home/deneme/main.c /tmp/initrd/init -static
+find . <span class="punctuation">|</span> cpio -o -H newc &gt; /home/deneme/initrd.img
+</pre>
+<p>Daha sonra da qemu kullanarak test edelim.</p>
+<pre class="code shell literal-block">
+qemu-system-x86_86 --enable-kvm -kernel /boot/vmlinuz-5.17 -initrd /home/deneme/initrd.img -append <span class="literal string double">&quot;quiet&quot;</span> -m 512m
+</pre>
+<p>Eğer tüm adımları doğru yaptıysanız ekranda hello world yazısı ile karşılaşacaksınız. Ayrıca kendi işletim sisteminizi çalıştırmış olacaksınız.</p>
+<p>Teorik olarak kernel ve initramfs tek başına bir işletim sistemi sayılabilir. Genel olarak linux dağıtımlarında sistemin kurulu olduğu diskte GNU sistemi bulunur ve kernel ve initramfs kullanılarak bu sistemdeki <strong>/sbin/init</strong> dosyası çalıştırılır. Bu dosya servis yöneticisi dosyamızdır ve sistemin geri kalanının çalışmasını sağlar.</p>
+<p>Yukarıdaki anlatımda initramfs nasıl çalıştığından söz edildi. Şimdi ise bir linux dağıtımında kullanılması için gereken işlemler üzerinde durulacaktır. Öncelikle initramfs oluşturma dizinimize gereken modülleri eklemeliniz. Bunun için /lib/modules/xxx içerisindeki dosyaları initramfs içine kopyalayalım.</p>
+<pre class="code shell literal-block">
+...
+mkdir -p /tmp/initrd/lib/modules/
+<span class="keyword">for</span> directory <span class="keyword">in</span> <span class="operator">{</span>crypto,fs,lib<span class="operator">}</span> <span class="literal string escape">\
+</span>    drivers/<span class="operator">{</span>block,ata,md,firewire<span class="operator">}</span> <span class="literal string escape">\
+</span>    drivers/<span class="operator">{</span>scsi,message,pcmcia,virtio<span class="operator">}</span> <span class="literal string escape">\
+</span>    drivers/usb/<span class="operator">{</span>host,storage<span class="operator">}</span><span class="punctuation">;</span> <span class="keyword">do</span>
+    find /lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)</span>/kernel/<span class="literal string interpol">${</span><span class="name variable">directory</span><span class="literal string interpol">}</span>/ -type f -exec install <span class="operator">{}</span> /tmp/initrd/lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)</span>/ <span class="literal string escape">\;</span>
+<span class="keyword">done</span>
+depmod --all --basedir<span class="operator">=</span>/tmp/initrd
+...
+</pre>
+<p>Yukarıdaki örnekte ilk önce gerekli modülleri kopyaladık ve ardından modüllerin listesini güncellemek için <strong>depmod</strong> komutunu kullandık. Bu modülleri yüklemek için /init dosyamız içinde <strong>modprobe</strong> komutunu kullanabiliriz. Bu dosya genellikle <strong>busybox ash</strong> kullanılarak yazılır. Bunun için öncelikle busybox dosyamız initramfs dizinine kopyalanır. Ve ardından sembolik bağları atılarak komutları kullanılabilir hale getirilir.</p>
+<pre class="code shell literal-block">
+...
+mkdir -p /tmp/initrd/bin
+install /bin/busybox /tmp/initrd/busybox
+chroot /tmp/initrd /busybox --install -s /bin
+...
+</pre>
+<p>Burada eğer busybox static olarak derlenmemişse çalışmayacağı için <strong>glibc</strong> ve gereken diğer dosyalarımızı da eklememiz gerekmektedir. Bunun için önce <strong>ldd</strong> komutu ile bağımlılıkları öğrenilir ve bağımlılık dosyası initramfs dizininde /lib içine yerleştirilir. Bu işlem tüm alt bağımlılıklarda tekrarlarır. Aşağıdaki örnekte bağımlılıkların bulunması ve kopyalanması için bir fonksiyon oluşturulmuştur.</p>
+<pre class="code shell literal-block">
+...
+<span class="keyword">function</span> get_lib<span class="operator">(){</span>
+    ldd <span class="name variable">$1</span> <span class="punctuation">|</span> cut -f3 -d<span class="literal string double">&quot; &quot;</span> <span class="punctuation">|</span> <span class="keyword">while</span> <span class="name builtin">read</span> lib <span class="punctuation">;</span> <span class="keyword">do</span>
+        <span class="keyword">if</span> <span class="operator">[[</span> <span class="literal string double">&quot;</span><span class="name variable">$lib</span><span class="literal string double">&quot;</span> <span class="operator">==</span> <span class="literal string double">&quot;&quot;</span> <span class="operator">]]</span> <span class="punctuation">;</span> <span class="keyword">then</span>
+            : empty line
+        <span class="keyword">elif</span> ! <span class="name builtin">echo</span> <span class="literal string interpol">${</span><span class="name variable">libs</span><span class="punctuation">[&#64;]</span><span class="literal string interpol">}</span> <span class="punctuation">|</span> grep <span class="name variable">$lib</span> &gt;/dev/null<span class="punctuation">;</span> <span class="keyword">then</span>
+            <span class="name builtin">echo</span> <span class="name variable">$lib</span>
+            get_lib <span class="name variable">$lib</span>
+        <span class="keyword">fi</span>
+    <span class="keyword">done</span> <span class="punctuation">|</span> sort <span class="punctuation">|</span> uniq
+<span class="operator">}</span>
+<span class="keyword">function</span> install_binary<span class="operator">(){</span>
+    get_lib <span class="name variable">$1</span> <span class="punctuation">|</span> <span class="keyword">while</span> <span class="name builtin">read</span> lib <span class="punctuation">;</span> <span class="keyword">do</span>
+        <span class="name variable">file</span><span class="operator">=</span>/tmp/initrd/lib/<span class="keyword">$(</span>basename <span class="name variable">$lib</span><span class="keyword">)</span>
+        <span class="keyword">if</span> <span class="operator">[[</span> ! -f <span class="name variable">$file</span> <span class="operator">]]</span> <span class="punctuation">;</span> <span class="keyword">then</span>
+            install <span class="name variable">$lib</span> <span class="name variable">$file</span>
+        <span class="keyword">fi</span>
+    <span class="keyword">done</span>
+    install <span class="name variable">$1</span> /tmp/initrd/bin/<span class="keyword">$(</span>basename <span class="name variable">$1</span><span class="keyword">)</span>
+<span class="operator">}</span>
+mkdir -p /tmp/initrd/lib/
+ln -s lib /tmp/initrd/lib64
+install_binary /bin/busybox
+...
+</pre>
+<p>Eğer Bazı dağıtımlarda /lib64 bulunur. Bu sebeple lib64 adında bir sembolik bağ oluşturmamız gerekebilir.</p>
+<p>Modülleri yüklemek için elle <strong>modprobe</strong> komutu kullanılabilir. Bu sayede initramfs dosyamıza eklediğimiz modüllerin tamamını yükleyip donanımları tanıması sağlanabilir.</p>
+<pre class="code shell literal-block">
+...
+find /lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)</span>/kernel -type f <span class="punctuation">|</span> <span class="keyword">while</span> <span class="name builtin">read</span> module <span class="punctuation">;</span> <span class="keyword">do</span>
+    <span class="name variable">module_name</span><span class="operator">=</span><span class="keyword">$(</span>basename <span class="literal string double">&quot;</span><span class="name variable">$module</span><span class="literal string double">&quot;</span><span class="punctuation">|</span> sed <span class="literal string double">&quot;s/\..*//g&quot;</span><span class="keyword">)</span>
+    <span class="keyword">if</span> <span class="name builtin">echo</span> <span class="literal string interpol">${</span><span class="name variable">module_name</span><span class="literal string interpol">}</span> <span class="punctuation">|</span> grep <span class="literal string double">&quot;debug&quot;</span> <span class="punctuation">;</span> <span class="keyword">then</span>
+        : ignore debug module
+    <span class="keyword">else</span>
+        modprobe <span class="literal string interpol">${</span><span class="name variable">module_name</span><span class="literal string interpol">}</span>
+    <span class="keyword">fi</span>
+<span class="keyword">done</span>
+...
+</pre>
+<p>Bu işlemin dezavantajı hem yavaş çalışması hem de gerekli olmayan modüllerin de yüklenmesidir. Bu yüzden bu yöntem yerine alternatif olarak <strong>eudev</strong> veya <strong>systemd-udev</strong> kullanılabilir. Bunun için initramfs dizinimize aşağıdaki eklemeler yapılır.</p>
+<pre class="code shell literal-block">
+...
+<span class="comment single"># eudev için
+</span>install_binary /sbin/udevd
+<span class="comment single"># systemd-udev için
+</span>install_binary /lib/systemd/systemd-udevd
+<span class="comment single"># Her ikisi için
+</span>install_binary /sbin/udevadm
+...
+</pre>
+<p>Daha sonra initramfs içerisindeki /init içinde aşağıdaki komutlar çalıştırılmalıdır.</p>
+<pre class="code shell literal-block">
+    <span class="comment single"># systemd-udev için
+</span>systemd-udevd --daemon
+<span class="comment single"># eudev için
+</span>    udevd --daemon
+    <span class="comment single"># Her ikisi için
+</span>    udevadm trigger -c add
+    udevadm settle
+</pre>
+<p>Eğer systemd kullanmayan bir dağıtım geliştirecekseniz veya initramfs dosyasının daha az boyutlu olmasını istiyorsanız <strong>eudev</strong> tercih etmelisiniz.</p>
+</div>
 </div>
 </div>
 </div>
