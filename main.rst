@@ -624,7 +624,8 @@ Yukarıdaki anlatımda initramfs nasıl çalıştığından söz edildi. Şimdi 
 	    drivers/{block,ata,md,firewire} \
 	    drivers/{scsi,message,pcmcia,virtio} \
 	    drivers/usb/{host,storage}; do
-	    find /lib/modules/$(uname -r)/kernel/${directory}/ -type f -exec install {} /tmp/initrd/lib/modules/$(uname -r)/ \;
+	    find /lib/modules/$(uname -r)/kernel/${directory}/ -type f \
+	        -exec install {} /tmp/initrd/lib/modules/$(uname -r)/ \;
 	done
 	depmod --all --basedir=/tmp/initrd
 	...

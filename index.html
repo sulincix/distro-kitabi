@@ -894,7 +894,8 @@ mkdir -p /tmp/initrd/lib/modules/
 </span>    drivers/<span class="operator">{</span>block,ata,md,firewire<span class="operator">}</span> <span class="literal string escape">\
 </span>    drivers/<span class="operator">{</span>scsi,message,pcmcia,virtio<span class="operator">}</span> <span class="literal string escape">\
 </span>    drivers/usb/<span class="operator">{</span>host,storage<span class="operator">}</span><span class="punctuation">;</span> <span class="keyword">do</span>
-    find /lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)</span>/kernel/<span class="literal string interpol">${</span><span class="name variable">directory</span><span class="literal string interpol">}</span>/ -type f -exec install <span class="operator">{}</span> /tmp/initrd/lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)</span>/ <span class="literal string escape">\;</span>
+    find /lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)</span>/kernel/<span class="literal string interpol">${</span><span class="name variable">directory</span><span class="literal string interpol">}</span>/ -type f <span class="literal string escape">\
+</span>        -exec install <span class="operator">{}</span> /tmp/initrd/lib/modules/<span class="keyword">$(</span>uname -r<span class="keyword">)</span>/ <span class="literal string escape">\;</span>
 <span class="keyword">done</span>
 depmod --all --basedir<span class="operator">=</span>/tmp/initrd
 ...
