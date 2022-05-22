@@ -586,7 +586,7 @@ Kernel initrd dosyasını ram üzerine yükler ve içerisindeki /init dosyasın�
 
 Örneğin aşağıdaki gibi bir C dosyamız olsun.
 
-..code-block:: C
+.. code-block:: C
 
 	#include <stdio.h>
 	int main(){
