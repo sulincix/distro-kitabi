@@ -763,7 +763,7 @@ Servis yönetici servisleri sıra ile çalıştırmalıdır. Burada 2 tip yakla�
 
 Servis dosyaları servis yöneticisinin kullandığı temel talimatları içeren dosyadır. Genellikle bash betiği veya ini dosyası şeklinde yazılır.
 
-. code-block:: shell
+.. code-block:: shell
 
 
 	start(){
