@@ -165,11 +165,11 @@ Ayrıca paketin kaynak kodunun nerede olduğu gibi bilgileri de içerir.
 	    ./configure --prefix=/usr
 	    make
 	}
-	install(){
+	package(){
 	    make install DESTDIR=/paketleme/dizini
 	}
 
-Yukarıdaki örnek derleme talimatında **build** ve **install** adında iki adet fonsiyon kullanarak paketin nasıl derleneceğini belirttik.
+Yukarıdaki örnek derleme talimatında **build** ve **package** adında iki adet fonsiyon kullanarak paketin nasıl derleneceğini belirttik.
 **archive** listesi indirilir ve build ve ardından install çalıştırılır.
 **DESTDIR** değerini ayarlayarak paketleme dizinine kurulum yaptırdık.
 **--perfix=/usr** parametresi ise paketin /usr/local yerine /usr/ içerisine kurulması için kullanıldı.
