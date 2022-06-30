@@ -703,6 +703,7 @@ Daha sonra initramfs içerisindeki /init içinde aşağıdaki komutlar çalışt
 
 .. code-block:: shell
 
+	...
 	# systemd-udev için
 	systemd-udevd --daemon
 	# eudev için
@@ -710,7 +711,30 @@ Daha sonra initramfs içerisindeki /init içinde aşağıdaki komutlar çalışt
 	# Her ikisi için
 	udevadm trigger -c add
 	udevadm settle
+	...
 
 Eğer systemd kullanmayan bir dağıtım geliştirecekseniz veya initramfs dosyasının daha az boyutlu olmasını istiyorsanız **eudev** tercih etmelisiniz.
 
+Initramfs dosyasının birinci amacı ana sistemi diske bağlayıp görevi servis yöneticisine devretmektir. Bu sebeple önce disk bağlanır ve ardından içerisine **/dev**, **/sys**, **/proc** dizinleri bağlanır ve **switch_root** kullanılarak ana sisteme geçilir. 
 
+.. code-block:: shell
+
+	# Eğer yoksa dev sys proc dizinlerini oluşturalım.
+	mkdir -p /dev /sys /proc
+	# dev sys proc bağlayalım
+	mount -t devtmpfs devtmpfs /dev
+	mount -t sysfs sysfs /sys
+	mount -t proc proc /proc
+	...
+	# diski bağlayalım
+	mount $root /new_root
+	# dev sys proc taşıyalım
+	mount --move /dev /new_root/dev
+	mount --move /sys /new_root/sys
+	mount --move /proc /new_root/proc
+	# /dev/root oluşturalım (isteğe bağlı)
+	ln -s $root /new_root/dev/root
+	# servis yöneticisini çalıştıralım.
+	exec switch_root /new_root $init
+
+Yukarıdaki örnekte **$root** ve **$init** değişkenleri değerini /proc/cmdline içerisinden okumalısınız. varsayılan init değeri **/sbin/init** olmalıdır.
