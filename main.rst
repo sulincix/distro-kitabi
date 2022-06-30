@@ -791,3 +791,47 @@ Yukarıda basit bir sysv-init servisi örneği verilmiştir. sysv-init ile berab
 .. code-block:: shell
 
 	$ service apache2 start
+
+Sıradan bir sisstem açılırken çalıştırılan başlıca servisler şunlardır:
+
+* sysinit
+* tmpfiles
+* udev
+* dbus
+* network-manager
+
+**sysinit** kök dizini rw olarak bağlayıp **/etc/fstab** dosyasındaki talimatlara göre bağlanacak dizinleri bağlamaya yarar. Bununla birlikte servis yöneticisinin bazı ihtiyaçlarını da karşılayabilir.
+
+.. code-block:: shell
+
+	# sistemi rw olarak bağlamak için
+	$ mount -o remount,rw /
+
+**tmpfiles** servisi /run dizni içerisindeki dosyalar ve dizinler gibi bazı sistemin ihtiyaç duyduğu ve her seferinde tekrar oluşturulması gereken dizinleri oluşturur. Ayrıca açılışta silinecek dosya veya dizinler varsa silmeye yarar.
+
+.. code-block:: shell
+
+	# systemd-tmpfiles aşağıdaki gibi çalıştırılır.
+	systemd-tmpfiles --create --remove --boot --exclude-prefix=/dev
+
+**udev** servisi aslında daha önce initramfs içerisinde başlatılmıştı. fakat initramfs içerisinde bütün sürücüler yer almadığı için servis olarak tekrar çalıştırılması gerekir. 
+
+.. code-block:: shell
+
+	# udevd zaten çalıştığı için yaznız udevadm çalıştırılır.
+	$ udevadm trigger -c add
+	$ udevadm settle
+
+**dbus** servisi uygulamaların birbiri ile haberleşmesini sağlayan köprüyü sağlayan servistir. Linux dağıtımlarının tamamına yakınında dbus servisi önyüklüdür. 
+
+.. code-block:: shell
+
+	# eğer yoksa /run/dbus dizini oluşturmalısınız. (Genellikle tmpfiles servisi bu dosyayı oluşturur.)
+	$ mkdir -p /run/dbus
+	$ dbus-daemon --system
+
+**network-manager** servisi ağ bağlantısı yapmaya yarayan servistir. Bu servis udev ve dbus servisinden sonra çalıştırılmalıdır.
+
+.. code-block:: shell
+
+	$ NetworkManager # -d parametresi eklerseniz debug çıktılarını görebilirsiniz.
