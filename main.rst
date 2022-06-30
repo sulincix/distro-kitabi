@@ -303,7 +303,7 @@ Paketler indirilme esnasında hata oluşursa işleme devam edilmez. Hata mesajı
 	    paket_adi=$1
 	    depo_adresi=$(get_repo $1)
 	    paket_yolu=$(get_package_path $1)
-	    wget -O /paket/onbellek/dizini/${paket_adi}.zip ${depo_adresi}/{paket_yolu}
+	    wget -O /paket/onbellek/dizini/${paket_adi}.zip ${depo_adresi}/${paket_yolu}
 	}
 	fetcher hello
 
@@ -738,3 +738,56 @@ Initramfs dosyasının birinci amacı ana sistemi diske bağlayıp görevi servi
 	exec switch_root /new_root $init
 
 Yukarıdaki örnekte **$root** ve **$init** değişkenleri değerini /proc/cmdline içerisinden okumalısınız. varsayılan init değeri **/sbin/init** olmalıdır.
+
+Servis yöneticisi
++++++++++++++++++
+Servis yöneticisi sistem çalışırken gereken sürekli olarak çalışan veya bir kere çalıştırılan komutları başlatır. En yaygın olarak kulanılan servis yöneticileri openrc, sysv-init, systemd servis yöneticileridir. Bu bölümde servis yöneticisinin çalışma mantığını ve temel servisler anlatılacaktır.
+
+Öncelikle servis yöneticisi **PID1** olarak çalıştığı için asla kapanmamalıdır. Eğer kapanırsa kernel panic hatasına sebep olur. Bu durumun önüne geçmek için servis başlatma işlemleri tamamlandıktan sonra servis yöneticisi sonsuz bekleme moduna geçer. Ayrıca genellikle servis yöneticileri servis açıp kapatma gibi işlemleri sistem çalışır durumdayken gerçekleştirebilmek için sürekli olarak komut bekler. Bu işlem de sonsuz bekleme modu yerine geçer.
+
+.. code-block:: C
+
+	...
+	int main(int argc, char *argv[]){
+	    ...
+	    while(1){
+			wait_signal();
+	        signal_handler();
+		}
+		return 1; // buraya ulaşılamaz.
+	}
+
+Yukarıdaki örnekte **wait_signal** ve **signal_handler** adında 2 adet fonksiyonumuzun olduğunu düşünelim. ilk fonksiyonumuz yeni bir sinyal olma durumunu algılayana kadar beklemeye ikinci fonksiyonumuz ise gelen sinyali algılayıp ona göre işlem gerçekleştirmeye yarar. Gördüğünüz gibi program asla kapanmıyor.
+
+Servis yönetici servisleri sıra ile çalıştırmalıdır. Burada 2 tip yaklaşım söz konusudur. İlki servislerin birbiri arasında tıpkı paket sisteminde olduğu gibi bir bağımlılık sistemi olması ve bu sıraya uygun olarak başlatılmasıdır. Bu yaklaşım paket yüklemedeki algıritmayla benzerdir. İkinci yaklaşım ise servislerin hangi öncelik ile çalıştırılacağının önceden belirlenip ona göre paketenmesidir. Bu dokümanda ikinci yaklaşım üzerinde durulacakdır.
+
+Servis dosyaları servis yöneticisinin kullandığı temel talimatları içeren dosyadır. Genellikle bash betiği veya ini dosyası şeklinde yazılır.
+
+. code-block:: shell
+
+
+	start(){
+		start-stop-daemon --start dbus-daemon --system 
+	}
+
+	stop(){
+	    start-stop-daemon --stop dbus-daemon --system 
+	}
+	case "$1" in
+	    start)
+		    start
+			;;
+	    stop)
+		    stop
+			;;
+	    *)
+		    echo "Usage: $0 {start|stop}"
+			exit 1
+			;;
+	esac
+
+Yukarıda basit bir sysv-init servisi örneği verilmiştir. sysv-init ile beraber gelen **start-stop-daemon** komutu bir komutun arkada başlatılmasına ve gerektiğinde kapatılmasına yardımcı olur. sysv-init servisleri çalıştırılırken **service** komutu kulanılır. bu komut servis dosyamızı okur ve istenen işlemi gerçekleştirir.
+
+.. code-block:: shell
+
+	$ service apache2 start
