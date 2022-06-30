@@ -751,10 +751,10 @@ Servis yöneticisi sistem çalışırken gereken sürekli olarak çalışan veya
 	int main(int argc, char *argv[]){
 	    ...
 	    while(1){
-			wait_signal();
+	        wait_signal();
 	        signal_handler();
-		}
-		return 1; // buraya ulaşılamaz.
+	    }
+	    return 1; // buraya ulaşılamaz.
 	}
 
 Yukarıdaki örnekte **wait_signal** ve **signal_handler** adında 2 adet fonksiyonumuzun olduğunu düşünelim. ilk fonksiyonumuz yeni bir sinyal olma durumunu algılayana kadar beklemeye ikinci fonksiyonumuz ise gelen sinyali algılayıp ona göre işlem gerçekleştirmeye yarar. Gördüğünüz gibi program asla kapanmıyor.
@@ -767,7 +767,7 @@ Servis dosyaları servis yöneticisinin kullandığı temel talimatları içeren
 
 
 	start(){
-		start-stop-daemon --start dbus-daemon --system 
+	    start-stop-daemon --start dbus-daemon --system 
 	}
 
 	stop(){
@@ -775,15 +775,15 @@ Servis dosyaları servis yöneticisinin kullandığı temel talimatları içeren
 	}
 	case "$1" in
 	    start)
-		    start
-			;;
+	        start
+	        ;;
 	    stop)
-		    stop
-			;;
+	        stop
+	        ;;
 	    *)
-		    echo "Usage: $0 {start|stop}"
-			exit 1
-			;;
+	        echo "Usage: $0 {start|stop}"
+	        exit 1
+	        ;;
 	esac
 
 Yukarıda basit bir sysv-init servisi örneği verilmiştir. sysv-init ile beraber gelen **start-stop-daemon** komutu bir komutun arkada başlatılmasına ve gerektiğinde kapatılmasına yardımcı olur. sysv-init servisleri çalıştırılırken **service** komutu kulanılır. bu komut servis dosyamızı okur ve istenen işlemi gerçekleştirir.
