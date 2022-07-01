@@ -326,6 +326,39 @@ Sıradan bir sisstem açılırken çalıştırılan başlıca servisler şunlard
 
 	$ NetworkManager # -d parametresi eklerseniz debug çıktılarını görebilirsiniz.
 
+Linux dağıtımındaki temel paketler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Linux dağıtımları paketlerden oluşur ve bu paketler paket yöneticisi tarafından yüklenir ve kaldırılır. Bazı paketler ise sistemin en temel parçasını oluşturur ve kaldırılması sistem hasarına yol açar. Bu paketler her sistemde bulunmak zorundadırlar.
+
+glibc
++++++
+Glibc sistemdeki bütün uygulamaların çalışmasını sağlayan en temel C kütüphanesidir. Bu kütüphane dağıtımın kalbini oluşturur.
+
+Glibc yerine alternatif olarak **musl**, **ulibc** kullanılabilir. Bu kütüphaneler ile glibc uyumlu çalışmadığı için tercih edilen kütüphane sistemin genelinde kullanılacak olan ana kütüphane olur. **glibc** en çok tercih edilen ve uygulama (özgür olmayan) uyumluluğu bulunduğu için bu dokümanda glibc üzerinden anlatım yapılacaktıdr.
+
+Glibc aşağıdaki gibi derlenir.
+
+.. code-block:: shell
+
+	$ mkdir -p build
+	$ cd build 
+        $ ../configure --prefix=/usr --disable-profile # daha fazla parametre gelebilir.
+	$ make
+
+Glibc derlenirken **configure** aşamasında çeşitli ayarlamalar yapılabilir. Bu ayarlamalardan başlıca bazıları şu şekilde gösterilebilir.
+
+.. code-block:: yaml
+
+	--enable-stack-protector=strong : Fazladan kod ekleyerek bellek hataları için fazladan koruma sağlar. 
+	--disable-werror : Derleme sırasındaki uyarı mesajlarını kapatır.
+	--disable-crypt : glibc tarafından sağlanan libcrypt kütüphanesini kapatmaya yarar. Bunun yerine libxcrypt kullanmanıza imkan tanır.
+	--enable-kernel=xxxx : minimum kernel sürümü ayarlamaya yarar. Eğer daha düşük sürüm bir kerneli olan sistem varsa sistem açılmaz.
+	--with-bugurl=xxxx : Sistem ile ilgili sorun oluşması durumda kullanıcılara hata bildirmesi için gösterilecek adres.
+	--enable-multi-arch : Çoklu mimari desteğini etkinleştirir. 32bit uygulamaları 64bitte çalıştırmanıza olanak sağlar.
+	--enable-stackguard-randomization : Bellek adreslerini rastgele karıştırarak daha fazla güvenlik sağlar.
+
+Glibc derlendikten sonra **make install** komutu ile kurulur.
+
 busybox
 +++++++
 Busybox tek bir dosya halinde bulunan birçok araç seçine sahip olan bir programdır. Bu araçlar initramfs sisteminde ve sistem genelinde sıkça kullanılabilir. Busybox aşağıdaki gibi kullanılır.
