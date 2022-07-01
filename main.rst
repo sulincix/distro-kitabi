@@ -78,7 +78,7 @@ Bu dosya ayrıca paketin bütünlüğünü kontrol etmek için de kullanılır.
 	cp -rfp ./* /
 	cp .LIST /paket/veri/yolu/paket.LIST
 
-Bu örnekte ilk satırda geçici dizine gittik ve paeti oraya açtık.
+Bu örnekte ilk satırda geçici dizine gittik ve paketi oraya açtık.
 Daha sonra paket içeriğini kök dizine kopyaladık.
 Daha sonra paket dosya listesini verilerin tutulduğu yere kopyaladık.
 Bu işlemden sonra paket kurulmuş oldu.
