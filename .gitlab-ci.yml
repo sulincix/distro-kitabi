@@ -12,7 +12,7 @@ pages:
     - apt install python3-docutils chromium -y
     - mkdir .public
     - make
-    - chromium --headless --no-sandbox --disable-gpu --force-device-scale-factor= 1.10 --print-to-pdf index.html && mv output.pdf distro-kitabi.pdf
+    - chromium --headless --no-sandbox --disable-gpu --force-device-scale-factor=1.10 --print-to-pdf index.html && mv output.pdf distro-kitabi.pdf
     - cp -r * .public
     - mv .public public
   artifacts:
