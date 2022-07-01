@@ -1,0 +1,15 @@
+Dosya listesi
+^^^^^^^^^^^^^
+Paketlerin dosya listeleri her dosyanın hash değerini kime ait olduğunu ve nerede yer aldığını belirten listedir.
+Bu dosya manifest ile birleşik olarak tek dosya halinde de olabilir fakat bu index alırken boyutu ciddi ölçüde arttıracağı için genellikle tercih edilmez. 
+
+Paket listelerinde dosya aitliği ve izni belirtilmek zorunda değildir. Temel olarak tüm dosyalar roota ait ve izin numarası 755 kabul ediliebilir ve paket kurulumu sonrası işlem olarak gerekli izinler değiştirilebilir.
+
+.. code-block:: yaml
+
+	d1a9a848bcd295183cbec5ee500b406f  /bin/bash
+	d8f3f334e72c0e30032eae1a1229aef1  /etc/bashrc
+	...
+
+Yukarıdaki örnekte paket listesinde sadece md5sum değerleri ve dosya konumu yer almaktadır. Bu tür listelerde dosya aitliği e izni gibi değerler yer almaz.
+Paket yapılandırma aşamasındayken izinler ayarlanabilir.

@@ -1,0 +1,65 @@
+Paketlerin kurulması
+^^^^^^^^^^^^^^^^^^^^
+Paketler indirilip bütünlüğü de kontrol edildikten sonra paketlerin tek tek kurulması aşamasına geçilir.
+Bu aşamada paketlerin arşivleri açılır ve paketteki dosyalar kök dizine kopyalanır.
+Bazı dosyalar **config** dosyaları olduğu için mevcut olan dosyanın değiştirilmesi kullanıcının yaptığı ayarlamaları bozacağı için değiştirilmesi ya kullanıcıya sorulur yada değiştirilmez.
+
+.. code-block:: python
+
+	...
+	for pkg in need_install:
+	    for file in pkg.files:
+	        if os.path.isfile(file):
+	            if pkg.is_config(file):
+	                continue
+	        new_file = pkg.extract(file)
+	        shutil.copyfile(new_file, file)
+	...
+
+Yukarıdaki örnekte paketin tüm dosyaları kök dizine kopyalandı. Fakat config dosyaları varsa e geçildi.
+Paket geçici dizine çıkartıldı ve geçici konumdaki dosya aslı olması gereken konuma kopyalandı.
+
+Paketlerdeki dosyalar root kullanıcısına ait olmalı ve dosya izninin 755 olması erekmektedir. Bunun haricinde dosya listesinde de dosya aitliği ve izinleri belirtilebilir.
+Dosya listesi aşağıdaki gibi olabilir:
+
+.. code-block:: yaml
+
+	files:
+	  - /bin/bash: 
+	    - type: binary
+	    - md5sum: 4883c32e5d4bed06efb4e669088a4a3a
+	    - owner: root
+	    - permission: 0755
+	  - /etc/bashrc:
+	    - type: config
+	    - md5sum: d8f3f334e72c0e30032eae1a1229aef1
+	    - owner: root
+	    - permission: 0755
+	...
+
+Yukarıda yaml formatta örnek paket listesi verilmiştir. Paket sistemimiz bu listeyi okur ve buna göre dosyaları yerleştirir ve izinlerini ayarlar.
+Ayrıca yukarıdaki örnekte paketteki dosyaların md5sum değeri de bulunmaktadır. Bu da paket geçici dizine açldıktan sonra kıyaslama amaçlı kullanılır ve paketin düzgün şekilde açıldığından emin olunduktan sonra dosya kök dizine koplalanır.
+
+İkili paket sistemlerinda paketlerin kurulma sırasının önemi yoktur. Fakat kaynak tabanlı paket sistemlerinde bu durum biraz farklıdır. Paketler kurulmadan önce derleneceği için derlemede kullanılacak paketlerin daha önce derlenmesi gerekmektedir. Bu yüzden bağımlılık ağacı çözerken kullanılan sıranın tersinden başlanarak derleme yapılır. Örneğin aşağıdaki gibi 5 tane paket bulnsun:
+
+.. code-block:: yaml
+
+	paket-a:
+	  ...
+	  - deps: paket-b paket-c
+	paket-b
+	  ...
+	  - deps: paket-c
+	paket-c:
+	  ...
+	  -deps: 
+	paket-d:
+	  ...
+	  - deps: paket-e
+	paket-e:
+	  ...
+	  - deps:
+
+Yukarıdaki örnektedi gibi bir bağımlılık ağacında derleme sırası: **e > c > d > b > a**  şeklinde olmalıdır. Bağımlılığı olmayan paketler en önce sonra ona ihtiyaç duyanlar şeklinde sıra izlenir. Burada cycle dependency sorunu bu sebeple derlemeyi çıkmaza sürükleyen önemli bir sorundur.
+
+Kaynak tabanlı paket sistemlerinde paketler derlendikten sonra doğrudan kök dizine kurulmak yerine önce geçici dizine kurulup ardundan paket listesi çıkartılır ve daha sonra kök dizie kopyalanır. Bu sayede pakette hangi dosyaların bulunduğunn listesi tutulmuş olur.

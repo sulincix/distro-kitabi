@@ -1,0 +1,3 @@
+Linux dağıtımındaki temel paketler
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Linux dağıtımları paketlerden oluşur ve bu paketler paket yöneticisi tarafından yüklenir ve kaldırılır. Bazı paketler ise sistemin en temel parçasını oluşturur ve kaldırılması sistem hasarına yol açar. Bu paketler her sistemde bulunmak zorundadırlar.

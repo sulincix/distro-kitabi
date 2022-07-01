@@ -1,0 +1,10 @@
+Linux dağıtımının temel yapısı
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Bir linux dağıtımını oluşturan tüm parçalar paketlerden oluşur. Bu bölüm linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi anlatılacaktır.
+
+Sıradan bir linux dağıtımını 4 temel parçada ele alabiliriz.
+
+* kernel (linux)
+* initramfs
+* servis yöneticisi
+* masaüstü ortamı

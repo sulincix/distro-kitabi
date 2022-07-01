@@ -1,0 +1,39 @@
+Depo indexleme
+++++++++++++++
+Depo, paket yönetim sistemlerinde kurulacak olan paketleri içeren bir veri topluluğudur.
+Kaynak depo ve ikili depo olarak ikiye ayrılır.
+Depo içerisinde hiyerarşik olarak paketler yer alır.
+Index ise depoda yer alan paketlerin isimleri sürüm numaraları gibi bilgiler ile adreslerini tutan kayıttır.
+Paket yönetim sistemi index içerisinden gelen veriye göre gerekli paketi indirir ve kurar. Depo indexi aşağıdaki gibi olabilir:
+
+.. code-block:: yaml
+
+	Package: hello
+	Version: 1.0
+	Dependencies: test, foo, bar
+	Path: h/hello/hello_1.0_x86_64.zip
+	
+	Package: test
+	Version: 1.1
+	Path: t/test/test_1.1_aarch64.zip
+	
+	...
+
+Yukarıdaki örnekte paket adı bilgisi sürüm bilgisi ve bağımılılıklar gibi bilgiler ile paketin sunucu içerisindeki konumu yer almaktadır.
+Depo indexi paketlerin içinde yer alan paket bilgileri okunarak otomatik olarak oluşturulur.
+
+Örneğin paketlerimiz zip dosyası olsun ve paket bilgisini **.INFO** dosyası taşısın. Aşağıdaki gibi depo indexi alabiliriz.
+
+.. code-block:: shell
+
+	function index {
+	    > index.txt
+	    for i in $@ ; do
+	        unzip -p $i .INFO >> index.txt
+	        echo "Path: $i" >> index.txt
+	    done
+	}
+	index t/test/test_1.0_x86_64.zip h/hello/hello_1.1_aarch64.zip ...
+
+Bu örnekte paketlerin içindeki paket bilgisi içeren dosyaları uç uca ekledik.
+Buna ek olarak paketin nerede olduğunu anlamak içn paket konumunu da ekledik.

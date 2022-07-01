@@ -1,0 +1,38 @@
+Paket sistemi tanımı ve temel yapısı
+------------------------------------
+
+Paket sisteminin tanımı
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Paket yönetim sistemleri bir dağıtımda bulunan en temel parçadır.
+Sistem üzerine paket kurma ve kaldırma güncelleme yapma gibi işlemlerden sorumludur.
+Başlıca 2 tip paket sistemi vardır:
+
+* Binary (ikili) paket sistemi
+* Source (kaynak) paket sistemi
+
+Bir paket sistemi hem binary hem source paket sistemi özelliklerine sahip olabilir. Bununla birlikte son kullanıcı dağıtımlarında genellikle binary paket sistemleri tercih edilir.
+
+
+Binary paket sistemi
+++++++++++++++++++++
+Bu tip paket sistemlerinde önceden derlenmiş olan paketler hazır şekilde indirilir ve açılarak sistem ile birleştirilir. 
+Binary paket sistemlerinde paketler önceden derleme talimatları ile oluşturulmalıdır.
+
+Binary paket sistemine örnek olarak **apt**, **dnf**, **pacman** örnek verilebilir.
+
+Source paket sistemi
+++++++++++++++++++++
+Bu tip paket sistemlerinde derleme talimatları kurulum yapılacak bilgisayar üzerinde kullanılarak paketler kurulum yapılacak bilgisayarda oluşturulur ve kurulur.
+
+Source paket sistemine örnek olarak **portage** örnek verilebilir.
+
+
+Paket sisteminin temel yapısı
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paket sistemleri 4 ana başlık altında incelenecektir:
+
+* Komut satırı ve parametre işleme
+* Paket kurulumu ve kaldırmaya yarayan işlemler
+* Depo indexleme ve depo yönetimi
+* Paket derleme

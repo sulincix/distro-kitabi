@@ -1,0 +1,25 @@
+Paketlerin indirilmesi
+^^^^^^^^^^^^^^^^^^^^^^
+Paketlerin kurulabilirliği de denetlendikten sonra paketler indirilir.
+Paketler indirilirken depo indexi içerisinden paketin nerede olduğu elde edilir ve o adrese istek atılır.
+Paketler indirilme esnasında hata oluşursa işleme devam edilmez. Hata mesajı vererek çıkılmaşı gerekir.
+
+.. code-block:: shell
+
+	function fetcher {
+	    paket_adi=$1
+	    depo_adresi=$(get_repo $1)
+	    paket_yolu=$(get_package_path $1)
+	    wget -O /paket/onbellek/dizini/${paket_adi}.zip ${depo_adresi}/${paket_yolu}
+	}
+	fetcher hello
+
+Yukarıdaki örnekte paket adı, konumu ve hangi depoda bulunduğu bilgisi alındıktan sonra paket önbelleğine indirilir.
+
+Paketler indirilirken önce farklı bir dizine indirilip işlem bittiğinde önbelek dizinine taşınırsa paketler indirilirken oluşacak hatalar en aza indirilir.
+
+Kaynak paketler için paketin derleme talimatı derlenmek üzere geçici dizine indirilir.
+Derlemek için gereken arşiv dosyaları ve yamalar gibi diğer dosyalar derleme öncesi indirilmelidir. 
+Bu işlem isterseniz derleme esnasında, isterseniz de kaynak paketler indirilirken gerçekleştirilir.
+
+Eğer depo indexi eski ise indirme işleminde sorun oluşabilir. Bu durumun önüne geçebilmek için depo indexinin güncelliğini denetleyebiliriz. Bunu yapmanın en kolay yolu ise depo index dosyasının hash değerini tutan bir dosyayı indirip yereldeki örneği ile aynı mı diye bakmaktır. Bu sayede depoya güncelleme gelip gelmediğini tüm indexi indirmeye gerek kalmadan anlayabiliriz. Eğer depo indexi güncellendiyse paketleri indirmeden önce depo indexini güncelleyebiliriz. Bu işlem isteğe bağlıdır ve çoğu paket sistemi bunu kulanıcı insiyatifine bırakır.

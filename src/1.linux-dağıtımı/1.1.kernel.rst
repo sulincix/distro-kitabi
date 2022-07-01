@@ -1,0 +1,35 @@
+Kernel
+++++++
+Kernel sistemin en temel parçasıdır. Donanım ile iletişimi kurar ve sistemin işlevlerinin düzgün yerine getirilmesini sağlar. GNU/Linux dediğimizde GNU sistemi ve Linux çekirdeği kullanılmıx anlamına gelir. Çekirdek tek başına işletim sistemi değildir. Kernel aşağıdaki dizinlerde bulunur.
+
+.. code-block:: shell
+
+	/boot/vmlinuz-xxx
+	/lib/modules/xxx
+	/usr/src/linux-xxx
+
+Burada xxx ile belirtilen kernelin sürümüdür. Bir sistemde birden çok kernel bulunabilir ve sistem açılırkein hangisi ile çalışacağı seçilebilir.
+
+Linux derlemek için öncelikle **make menuconfig** komutu kullanılarak kernel yapılandırılır. Veya **make defconfig** kulanılarak varsayılan ayarlarda yapılandırılabilir.
+Ardından vmlinuz dosyamızı derlemek için **make bzImage** kullanılır. Bu işlemden sonra kernelin ana dosyası oluşturulmuş olur. Kernel modüler yapıya sahiptir ve modüller sayesinde çalışma sırasında sürücüler açılıp kapatılabilir. Bu sayede kaynaktan tasarruf edilmiş olur. Modülleri derlemek için **make modules** kullanılır. Aşağıda özet olarak kernel derleme örneği yer almaktadır.
+
+.. code-block:: shell
+
+	make menuconfig
+	make bzImage -j24
+	make modules -j24
+
+Derleme yaparken birden çok işlemci çekirdeğini kullanmak için **-j4** eklenebilir. burdada 4 işlem sayısıdır ve işlemci çekirdeği sayısı kadar olması önerilir. 
+
+kernel yapılandırma dosyası kaynak kodun içerisinde **.config** dosyası olarak bulunur. Bu dosyayı yapılandırmak yerine hazır olarak ekleyerek kullanabilirsiniz.
+
+Derlenmiş olan kernelimizi sisteme yüklemek için önce vmlinuz dosyamızı kopyalamamız gereklidir. vmlinuz dosyamız arch/x86/boot içinde yer alır. Daha sonra **make modules_install** kullanılarak modüller yüklenir. En son olarak kernelin kaynak kodunun bir kopyasını /usr/src içine kopyalamamız gereklidir. Bunun sebebi ise daha sonradan kurulması gereken herhangi bir sürücü oluştuğunda kernelin kaynak kodundan yararlanılmasıdır. Kernelimizin libc header dosyalarını yüklemek için **make headers_install** kullanılır. 
+
+.. code-block:: shell
+
+	install arch/x86/boot/bzImage $DESTDIR/boot/vmlinuz-5.17
+	make modules_install INSTALL_MOD_PATH=$DESTDIR
+	make headers_install INSTALL_HDR_PATH=$DESTDIR/usr
+	cp -rf linux-5.17-source $DESTDIR/usr/src/linux-headers-5.17
+
+Kernelin derlenmesi ve kurulması ile ilgili dağıtımdan dağıtıma farklılıklar bulunabilir. Sistemin çalışması için modüller ve vmlinuz dosyası gereklidir. Diğer dosyalar ise modül ve uygulama derlemek için kullanılır.

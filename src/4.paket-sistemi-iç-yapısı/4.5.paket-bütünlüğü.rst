@@ -1,0 +1,25 @@
+Paket bütünlüğü kontrol etme
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paketler indirildikten sonra depo indexi içerisindeki hash değeri ile indirilen paketinki aynı mı diye bakılır.
+Bununla birlikte gpg imzası kontrolü gibi ek kontroller yapılır. Bu sayede paketin gerçekten dağıtımın orijinal deposundan hatasız indirildiğinden emin olunur.
+
+İkinci olarak paketlerin içerisindeki dosya listeleri çıkartılır ve çakışma var mı diye kontrol edilir.
+Ayrıca başka bir paketin dosyası kurulu olan diğer paketin üzerine yazılmamalıdır.
+Ancak paket bilgisinde üzerine yazılabilecek paket lisesi varsa ve paket o listedeyse bu durum görmezden gelinir.
+Eğer dosya çakışması varsa buna **file confilct** adı verilir. Bu durum oluşuyorsa ve paket bilgisinde belirtilmemişse kurulum engellenmelidir.
+File conflict kaynak paketlerde daha henüz derleme işlemine başlanmadığı için tespit edilemeyeceği için kontrol edilmez.
+
+Dizinler için file confilct kontrolüne bakılmaz.
+
+.. code-block:: python
+
+	all_files = []
+	for pkg in need_install:
+	    for file is pkg.file_list:
+	        if file in all_files:
+	            error_message("File conflict detected %s" % file)
+	        all_files.append(file)
+
+Yukarıdaki örnekte bütün dosyaların yollarını tutan dizi oluşturulmuştur.
+Bu diziye sırası ile kurulacak paketlerin dosyalarının yolları eklenmiştir.
+Eğer dosya birden fazla pakette varsa filde conflict varlığı tespit edilip işleme son verilmiştir.

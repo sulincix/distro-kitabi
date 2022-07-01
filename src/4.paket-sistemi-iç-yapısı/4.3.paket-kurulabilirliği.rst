@@ -1,0 +1,4 @@
+Paket kurulabilirliğinin denetlenmesi
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paket sistemimiz kurulacak veya kaldırılacak paketlerin listesini oluşturduktan sonra bu paketlerin kullanılabilirliği denetlenmelidir. 
+Eğer paket depoda yoksa veya hatalı sürümü varsa, paket kaldırıldığında sisteme zarar verecekse, paket kara listede ve kurulmaması gerekiyorsa engellenmesi gereklidir.

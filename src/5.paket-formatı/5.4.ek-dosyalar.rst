@@ -1,0 +1,4 @@
+Ek dosyalar
+^^^^^^^^^^^
+Paketin içerisinde ek olarak yapılandırma aşamasıda kullanılan dosyalar paketin simgesi paketin derleme talimatı gibi dosyalar yer alabilir.
+Bu dosyalar paket sistemi tarafından farklı amaçlar için kullanılabilir veya herhangi bir işlevi olmayan dosyalar da olabilirler. 

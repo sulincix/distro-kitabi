@@ -1,0 +1,11 @@
+Komut satırı
+++++++++++++
+Komut satırı kullanıcıdan gelen isteği yerine getirmek için kullanılan söz dizisidir.
+Paket sisteminde komut olarak **install**, **remove**, **update** bulunur.
+Bu komutlar ilk parametredir ve sonrasonda paket isimleri veya ek parametreler bulunur. Örneğin:
+
+.. code-block:: shell
+
+	apt-get install --reinstall gimp
+
+Yukarıdaki örnekte install yapılacak eylem --reinstall ek parametre gimp ise paket adıdır.

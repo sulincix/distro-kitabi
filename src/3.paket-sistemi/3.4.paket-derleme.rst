@@ -1,0 +1,35 @@
+Paket derleme
++++++++++++++
+Paket sistemlerinde ikili paketler oluşturulurken derleme talimatı kullanılır.
+Bu talimat paketin nasıl derleneceğini ve nereye hangi dosyanın geleceğini belirler.
+Ayrıca paketin kaynak kodunun nerede olduğu gibi bilgileri de içerir.
+
+.. code-block:: shell
+
+	name="bash"
+	version="5.0"
+	depends=(ncurses readline)
+	archive=(
+	    https://ftp.gnu.org/gnu/bash/bash-5.0.tar.gz
+	)
+	
+	build(){
+	    tar -xf bash-5.0.tar.gz
+	    cd bash-5.0
+	    ./configure --prefix=/usr
+	    make
+	}
+	package(){
+	    make install DESTDIR=/paketleme/dizini
+	}
+
+Yukarıdaki örnek derleme talimatında **build** ve **package** adında iki adet fonsiyon kullanarak paketin nasıl derleneceğini belirttik.
+**archive** listesi indirilir ve build ve ardından install çalıştırılır.
+**DESTDIR** değerini ayarlayarak paketleme dizinine kurulum yaptırdık.
+**--perfix=/usr** parametresi ise paketin /usr/local yerine /usr/ içerisine kurulması için kullanıldı.
+
+Paketlerin nasıl derlendiği ile ilgili gerekli bilgiyi kaynak kodun kendisinden veya archlinux gibi diğer dağıtımların depolarından bakabilirsiniz.
+
+Paket sistemi derleme işlemi yaparken root yekisi kullanmamalıdır.
+Bunun en önemli sebebi ise paket derlenirken hatalı bir durum oluşursa derleme yapan sisteme müdahale edebilir ve paket bozuk oluşturulabilir.
+Bu durumun önüne geçebilmek için **fakeroot** ve **unshare** komutlarından veya aynı işe yarayan yöntemlere başvurmanız gerekmektedir.

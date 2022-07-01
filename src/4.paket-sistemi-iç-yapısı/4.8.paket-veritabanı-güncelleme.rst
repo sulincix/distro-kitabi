@@ -1,0 +1,10 @@
+Yerel veri tabanının güncellenmesi
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Yerel veritabanı hangi paketlerin kurulu olduğunu ve hangi paketin hangi dosyaya sahip olduğu gibi bilgileri taşır.
+Bunula birlikte depo indexini ve paketlerin yapılandırmalarını da kapsar.
+Yerel veri tabanı herhangi bir işlem çalıştırılmadan önce okunur ve mevcut duruma göre işlem gerçekleştirilir.
+
+Yerel veri tabanı güncelleme işleminin tamamı en son yapılmaz.
+Bunu yerine paketlerle ilgili olan veriler (kurulu paket listesi, paket dosya listesi vb.) her paket kurulduğunda güncellenir.
+Bu sayede işlem yarıda kesilirse veya sistemde ani olarak güç kaybı gerçekleşirse sistemin nerede kaldığı belli olur ve kurtarmak mümkün olur.
+Bununla birlikte eğer index güncelleme işlemi yapılırsa yerel veri tabanı yeni indirilen indexi kullanmak için indirme sonunda da güncellenir.

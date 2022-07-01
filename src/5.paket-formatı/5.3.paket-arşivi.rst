@@ -1,0 +1,5 @@
+Paket arşivi
+^^^^^^^^^^^^
+Bu dosya paketimizin tüm dosyalarını içeren dosyadır. Bu dosya genellikle paketin boyutunu küçültmek amacı ile sıkıştırılmıştır.
+
+Paket arşivi ve paket listesi metapaket adı verilen sadece bağımılık belirten paketlerde bulunmak zorunda değildir. Bu gibi paketlerin sadece manifesti bulunur ve paket sadece bağımlılıkları yardımı ile diğerlerinin de kurulmasını sağlar. Buna en iyi örnek masaüstü metapaketleridir.

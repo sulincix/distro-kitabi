@@ -1,0 +1,9 @@
+Paket dosyası formatı
+---------------------
+Paket sistemleri belirli bir paket formatını kullanır. Örneğin **deb**, **rpm**, **apk** gibi formatlar bulunur. Bu bölümde örnek bir paket formatı üzerinden paket formatının iç yapısını anlatılacaktır.
+
+Paket dosyaları özünde birer arşiv dosyasıdır ve belli bir hiyerarşiye göre dizilir. 3 temel parçadan oluşur:
+
+* Manifest dosyası
+* Dosya listesi
+* Dosya arşivi

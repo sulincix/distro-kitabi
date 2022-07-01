@@ -1,0 +1,76 @@
+Paket bağımılıkları çözme
+^^^^^^^^^^^^^^^^^^^^^^^^^
+Bir paket sisteminin en karmaşık ve en önemli parçası bağımılık çözme kısmıdır.
+Bu kısımda paketler ihtiyaç duyulan bağımlılıkları ile beraber kurulacağı için hangi paketlerin gerekli olduğuna karar veren kısım burasıdır.
+Çalışma prensibi olarak sürekli kendini tekrarlayan bir fonksiyon bulunur ve bu fonksiyon tamamı hesaplanana kadar içi içe çalışmaya devam eder.
+
+Bir pakete ihtiyaç duyan tüm paketlere ters bağımlılık adı verilir. Bu yapıyı ağacın köklerine ve dallarına benzetebiliriz. Bir dala ulaşmak için geçmemiz gereken dallar bağımlılıkları bir dalı kestiğimizde etkilenen dallar işe ters bağımlılıkları ifade eder.
+
+.. code-block:: python
+
+	need_install = []
+	def resolve(package):
+	    for pkg in package.dependencies:
+	        if pkg not in need_install:
+	            resolve(pkg)
+	    if not package.is_installed():
+	        need_install.append(package)
+	resolve(xxxx)
+
+Yukarıdaki örnekte bağımlılık ağacı bulma gösterilmiştir. Burada **resolve** fonksiyonu kendi kendisini iç içe çağırır.
+Paketlerin bağımlılıkları ve onun alt bağımlılıkları bu fonksiyona sokulur. Kurulu olmayanlar kurulacak paket listesine eklenir.
+Burada bazı durumlarda bu döngüsel işlem kısır döngüye girip sonsuz kere tekrar edebilir ve işlem bitmez.
+Bu duruma **cycle dependency** adı verilir. Genellikle kötü paketlenmiş paketlerden kaynaklanır. Kaynak tabanlı paket sistemlerinde bu durum çözülemezken ikili paket sistemlerinde derleme yapılmayacağı için aşağıdaki gibi bir çözüm bulunabilir.
+
+.. code-block:: python
+
+	...
+	if package in cache_list:
+	    if package not in cycle_list:
+	        cycle_list.append(package)
+	    return
+	cache_list.append(package)
+	...
+
+Yukarıdaki örnekte her paket sadece bir kez resove fonksiyonundan geçer.
+Bu sayede cycle dependency sorunu aşılmış olur. Kaynak tabanlı paket sistemlerinde bu çözüm işe yaramayabilir.
+Bunun sebebi ise paketler derlenirken kullanılacak derleme bağımlılığı sırası hatalı hesaplanabilir.
+Bu sebeple paketçilerin cycle dependency sorununa sebep olmaması gereklidir.
+
+Yukarıdaki örnekte eğer cycle dependency sorunu oluştuysa cycle_list listesinde bunların listesi tutulur.
+Kaynak tabanlı paket listesinde bu listede bir eleman varsa derleme yapılamayacağı için hata verip çıkması sağlanmalıdır.
+
+Bazı durumlarda bir paket kurulu iken başma bir paketin kurulamaması gerekmektedir.
+Bu gibi durumlara **conflict** adı verilir. Conflict varsa kurulu olan paket silinir ve yerine istenen paket kurulur.
+Veya bu işlemi kullanıcının elle yapması istenir ve hata mesajı verilerek kapanır.
+
+.. code-block:: python
+
+	...
+	for pkg in package.conflicts:
+	    if pkg.is_installed():
+	        error_message("Conflict detected! Please remove %s" % pkg.name)
+	    elif pkg in need_install:
+	        error_message("Conflict detected! Cannot resolve %s" % pkg.name)
+	...
+
+Yukarıdaki örnekte paketin çakışmaları mevcutsa kurulum reddediliyor. Ayrıca paket bağımlılığı listesinde birbiri ile çakışan paketler mevcutsa da kurulum reddedilmelidir.
+
+Ters bağımlılıklar hesaplanırken burada yapılan işlemin tam tersi yapılır.
+Kaldırılacak olan paket diğer paketlerde ağımlılık olarak ekli mi diye bakılır ve aynı işlem onlara da uygulanır.
+ters bağımlılıklarda da cycle dependency sorunu oluşabilir. Fakat kaynak tabanlılarda da kaldırma işleminde cycle dependency soruna sebep olmaz.
+
+.. code-block:: python
+
+	...
+	need_remove = []
+	def resolve_revdep(package):
+	    if package not in need_remove:
+	        need_remove.append(package)
+	    for pkg in all_packages:
+	        if package in pkg.dependencies:
+	            resolve_revdep(pkg)
+	resolve_revdep(xxx)
+	...
+
+Yukarıdaki örnekte paket hangi paketlere ait bağımlılık diye tespit edildi ve iç içe aynı işlemler uygulandı.

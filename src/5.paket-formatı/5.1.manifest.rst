@@ -1,0 +1,23 @@
+Manifest dosyası
+^^^^^^^^^^^^^^^^
+Paketlerin manifest dosyalar paketin ne olduğunu, nelere bağımlı olduğunu, nelerle çakıştığı gibi bilgileri içeren paketin kimlik kartı niteliğinde olan dosyasıdır.
+Bu dosya yaml, json, xml gibi formatlarda bulunur. 
+
+.. code-block:: yaml
+
+	- package:
+	  - name: bash
+	  - version: 5.0
+	  - archive-hash: d1a9a848bcd295183cbec5ee500b406f
+	  - dependencies: ncurses readline
+	  - conflicts: bash-unstable
+	  - architecture: x86_64
+	  - description : GNU bash shell
+	  - component: sys-app/core
+
+Yukarıdaki örnekte manifest yaml formatında verilmiştir. Paketin adı sürümü gibi bilgilerin yanında arşivin md5sum değeri de yer almaktadır.
+Bu değer paket açılmadan önceki bütünlük kontrolü için kullanılır. Eğer tutarlı değilse arşiv bozuk olarak indirilmiştir.
+componont olarak gösterilen değer sistemin hangi parçasına ait olduğunu ayırt etmek için eklenen bir parametredir. 
+Buna ek olarak isteğer bağlı farklı ek değerler eklenebilir.
+
+Mainfest dosyası index oluşturulurken arşivden çıkartılır ve uc uca eklenerek index üretilir. Bu sebeple paket içerisinde genellikle sıkıştırılmamış halde bulunur.

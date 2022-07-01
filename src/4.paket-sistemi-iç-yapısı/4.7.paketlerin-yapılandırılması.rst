@@ -1,0 +1,40 @@
+Paketlerin yapılandırılması
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Paket sistemi paketleri disk üzerine kurduktan sonra bazı komutların çalıştırılması gereklidir.
+Örneğin sisteme yeni bir yazı tipi kurulduğunda yazı tipi önbelleği güncellenmelidir.
+Bunun için ise **fc-cache -f** komutu kullanılır. Bu gibi senaryolarda paketlern içerisinde paket kurma ve kaldırmada gerekli komutlar bulunur.
+Öneğin deb paketlerinde bu işlem **postinst**, **preinst**, **preinst**, **prerm** dosyaları ile gerçekleştirilir.
+Bununla birlikte bu eylemler paketin içinde tutulmak yerine paket sistemine önceden tanımlanarak eklenebilir.
+
+.. code-block:: shell
+
+	...
+	if [[ -f /var/lib/pkgsys/${pkgname}/post-install.sh ]] ; then
+	    if ! /var/lib/pkgsys/${pkgname}/post-install.sh ; then
+	        echo "Package ${pkgname} not configured yet!"
+	        exit 1
+	    if
+	fi
+	...
+
+Yukarıdaki örnekte paketin kurulum sonrası eylemi varsa çalıştırıldı. Eğer çalıştırıken sorun meydana geldiyse hata mesajı verdi ve kapandı.
+Paket sistemimiz prıgramı sonlandırmak yerine ayarlanamamış paketlerin listesini sonradan ayarlanabilmesi adına bir yerde tutabilir.
+
+Diğer bir yol da önceden tanımlanan komutlardır. Bunun için bir dizinin veya dosyanın son değiçiklik tarihi ile yerel veritabanındaki farklı mı diye bakılabilir.
+Örneğin /usr/share/fonts dizininin değişiklik tarihi değişmişse dizin içerisine dosya eklenmiş veya dosya silinmiştir. Bu durumda ilgili komut çalıştırılır.
+
+.. code-block:: python
+
+	...
+	def post_operation(path, command):
+	    if get_changes_time(path) > get_current_changes_time(path):
+	        os.system(command)
+	        set_current_changes_time(path, time.time())
+	post_operation("/usr/share/fonts", "fc-cache -f")
+	...
+
+Yukarıdaki örnekte hedef dizinin değişiklik tarihi daha güncel ise komut çalıştırılır. 
+Komut bittikten sonra dizinin değişikli tarihi şu anki tarih olarak güncellenir.
+Bu sayede sadece değişiklik varsa komutun çalışması sağlanır.
+
+Paket sonrası işlemlerin sırası paket bağımlılık ağacı sırası şeklinde olmalıdır. Kısaca ilk kurulan paket ilk yapılandırılır ilkesi gözetilir.

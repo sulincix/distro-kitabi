@@ -1,0 +1,15 @@
+Paketlerin sorgulanması
+^^^^^^^^^^^^^^^^^^^^^^^
+Paket sistemleri paketler kurulmadan önce paketler kurulu mu değil mi diye kontrolden geçer.
+Hangi paketlerin kurulacağıda dair bir liste oluşturulur.
+Bu listede yer alan paketler bir sonraki aşamaya geçer.
+
+.. code-block:: python
+
+	need_install = []
+	for pkg in pkg_list:
+	    if not pkg.is_installed():
+	        need_install.append(pkg.name)
+
+Yukarıdaki örnekte paket kurulu değilse kurulacak paketler listesine eklenir.
+Paket kaldırılırken de bu işlemin tam tersi plarak kurulu olmayan paketler es geçilir.

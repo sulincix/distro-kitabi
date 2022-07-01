@@ -1,0 +1,12 @@
+Paket sisteminin iç yapısı
+--------------------------
+Paket yönetim sistemlerinde paket kurma ve kaldırma işlemleri aşağıdaki sıra ile yapılır:
+
+* Yerel veritabanından paketlerin durununun sorgulanması
+* Paket bağımılıklarının çözümlenmesi
+* Paketlerin kurulabilirliğinin denetlenmesi
+* Paketlerin indirilmesi
+* Paketlerin bütünlüğünün kontrol edilmesi
+* Paketlerin kurulması
+* Paketlerin yapılandırılması
+* Yerel veritabanının güncellenmesi
