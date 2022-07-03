@@ -37,6 +37,8 @@ Kütüphane aşağıdaki gibi kullanılabilir.
 
 Şimdi bu kütüphaneyi başka bir kodu derlemek için kullanalım. Bunun için **-L** parametresi ile kütüphanenin bulunduğu yeri göstermeliyiz. **-l** parametresi ile de kütüphaneyi bağlamalıyız.
 
+.. code-block:: C
+
 	$ gcc -L/ders/kutuphane -ldeneme main.c -o main
 
 Yukarıdaki örnekte /ders/kutuphare/libdeneme.so dosyasını kullandık.
