@@ -21,6 +21,15 @@ Yuvarlanan sürümlü dağıtımlara örnek olarak **archlinux** gösterilebilir
 
 Bağımsız tabanlı dağıtım tasarlamak için yuvarlanan sürümlü dağıtım tasarlamak daha basittir ve daha az uğraş gerektirir.
 
+Uzun süreli destek (LTS)
+++++++++++++++++++++++++
+Bazı gnu/linux dağıtımları üzün süreli desteğe sahiptirler. Uzun süreli desteğe sahip sistemler daha kararlıdır fakat genellikle eski paketler içerirler. 
+Genellikle sık güncelleme yapılması istenmeyen alanlarda veya kararlılığın önemli olduğu alanlarda tercih edilir. Yuvarlanan sürümlü dağıtımların uzun süreli desteği bulunmaz.
+Uzun süreli destek özelliğine sahip olan uygulama ve sistemlerde bulunan güvenlik açıkları ve hatalar güncel sürümden uyarlama yolu ile eklenir. (backports)
+Bu uyarlamalar sayesinde açıklar ve eksikler olmadan sistem sorunsuz bir şekilde çalıştırılabilir.
+
+**Yazar notu:** Bana sorarsanız LTS kullanmayın :D
+
 Linux dağıtımının temel yapısı
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Bir linux dağıtımını oluşturan tüm parçalar paketlerden oluşur. Bu bölüm linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi anlatılacaktır.
