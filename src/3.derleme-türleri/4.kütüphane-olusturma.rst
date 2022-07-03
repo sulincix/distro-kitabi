@@ -1,0 +1,41 @@
+Kütüphane oluşturma
+^^^^^^^^^^^^^^^^^^^
+Kütühane dosyaları **so** uzantılıdır ve ihtiyaç duyulan diğer yazılımlar tarafından kullanılır.
+Kütüphane oluşturmak için öncelikle aşağıdaki gibi bir C kodumuz olsun.
+
+.. code-block:: C
+
+	//deneme.c dosyası
+	#include <stdio.h>
+	void yazdir(){
+	    printf("Merhaba Dünya\n");
+	}
+
+Bu dosyayı doğrudan derlersek **main** fonksiyonu bulunmadığı için aşağıdaki gibi bir hata ile karşılaşırız.
+
+.. code-block:: shell
+
+	$ gcc deneme.c -o libdeneme.so 
+	    ...: in function `_start':
+	    (.text+0x17): undefined reference to `main'
+	    collect2: error: ld returned 1 exit status
+
+Kütüphane derlemek için **-shared** parametresi kullanılır. Bu sayede **main** bulunmayan kütüphane dosyamız oluşturulmuş olur.
+
+.. code-block:: shell
+
+	$ gcc deneme.c -o libdeneme.so -shared
+Kütüphane aşağıdaki gibi kullanılabilir.
+
+.. code-block:: C
+
+	extern void yazdir();
+	int main(){
+	    yazdir();
+	}
+
+Şimdi bu kütüphaneyi başka bir kodu derlemek için kullanalım. Bunun için **-L** parametresi ile kütüphanenin bulunduğu yeri göstermeliyiz. **-l** parametresi ile de kütüphaneyi bağlamalıyız.
+
+	$ gcc -L/ders/kutuphane -ldeneme main.c -o main
+
+Yukarıdaki örnekte /ders/kutuphare/libdeneme.so dosyasını kullandık.

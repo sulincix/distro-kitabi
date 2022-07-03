@@ -2,6 +2,8 @@ Derleme türleri
 ---------------
 Paketler derlenirken farklı derleme araçları ve derleyiciler kullanılır. Bu bölümde kaynak kod derleme ile ilgili bilgiler verilecektir. Anlatım için C programlama dili ve gcc dercih edilecektir.
 
+Bu bölümün amacı sizlere C kaynak kodlarının nasıl derlendiği ve nasıl çalıştığını anlatmaktır. C programlama dili ile ilgili yeterli bilginiz yoksa bu bölüme geçmeden önce bilgilerinizi gözden geçirmeyi öneririz.
+
 Örneğin elimizde aşağıdaki gibi bir C dosyası bulunsun. Bu dosya derlenip bilgisayarın anlayabileceği hale getirilmek için **gcc**  kullanılarak derlenmelidir.
 
 .. code-block:: C
