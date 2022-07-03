@@ -25,6 +25,7 @@ Kütüphane derlemek için **-shared** parametresi kullanılır. Bu sayede **mai
 .. code-block:: shell
 
 	$ gcc deneme.c -o libdeneme.so -shared
+
 Kütüphane aşağıdaki gibi kullanılabilir.
 
 .. code-block:: C
