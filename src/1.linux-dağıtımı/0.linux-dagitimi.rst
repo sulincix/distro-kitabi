@@ -1,3 +1,26 @@
+Linux dağıtımı nedir
+^^^^^^^^^^^^^^^^^^^^
+**Linux dağıtımı** (GNU/Linux) linux çekirdeğini kullanan ve GNU araç setini barındıran bir işletim sistemidir.
+Buna dağıtım denmesinin sebebi özgür yazılım olması ve isteyenlerin istediği gibi düzenleme ve dağıtma yetkisinin bulunmasıdır.
+
+**Taban** kavramı ise bir gnu/linux dağıtımının kullandığı temel uygulama ve ayarların standartlarıdır.
+Örneğin debian tabanı paket sistemi olarak apt kullanır.
+glibc kütüphanesini kullanır ve sabit sürümlüdür (fixed release) ve uzun süreli destek (LTS) yapısına göre geliştirilir.
+Alpine tabanı ise glibc yerine musl kullanır. Yuvarlanan sürümlüdür (rolling release).
+
+Dağıtımların kendine ait tabanı bulunabilir veya başka bir dağıtımın tabanını kullanabilir.
+
+
+Sabit sürüm ve yuvarlanan sürüm
++++++++++++++++++++++++++++++++
+Sabit sürümlü dağıtımlarda paketler belli aralıklarla toplu olarak güncelleme alırlar. Genellikle daha kararlıdırlar fakat daha yavaş güncelleme alırlar.
+Sabit sürümlü dağıtımlara örnek olarak **debian** ve türevleri örnek gösterilebilir.
+
+Yuvarlanan sürümlü dağıtımlar ise sürekli olarak güncelleme alırlar ve herhangi bir sürüm numarasına sahip değillerdir. Bu daha az kararlı olmasına sebep olabilirken daha güncel bir sistem sağlayabilir.
+Yuvarlanan sürümlü dağıtımlara örnek olarak **archlinux** gösterilebilir.
+
+Bağımsız tabanlı dağıtım tasarlamak için yuvarlanan sürümlü dağıtım tasarlamak daha basittir ve daha az uğraş gerektirir.
+
 Linux dağıtımının temel yapısı
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Bir linux dağıtımını oluşturan tüm parçalar paketlerden oluşur. Bu bölüm linux dağıtımının temel yapısı ve paket sistemi ile ilişkisi anlatılacaktır.
