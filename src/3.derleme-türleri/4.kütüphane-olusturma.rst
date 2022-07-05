@@ -41,7 +41,7 @@ Kütüphane aşağıdaki gibi kullanılabilir.
 
 Şimdi bu kütüphaneyi başka bir kodu derlemek için kullanalım. Bunun için **-L** parametresi ile kütüphanenin bulunduğu yeri göstermeliyiz. **-l** parametresi ile de kütüphaneyi bağlamalıyız.
 
-.. code-block:: C
+.. code-block:: shell
 
 	$ gcc -L/ders/kutuphane -ldeneme main.c -o main
 
@@ -50,7 +50,7 @@ Yukarıdaki örnekte /ders/kutuphane/libdeneme.so dosyasını kullandık.
 Artık derlediğimiz main adındaki ikili dosyayı çalıştırabiliriz. Çalıştırdığımızda aşağıdaki gibi hatayla karşılaşırız.
 libdeneme.so dosyasını bulamadığını söylüyor.
 
-.. code-block:: C
+.. code-block:: shell
 
 	$ ./main 
 	./main: error while loading shared libraries: libdeneme.so: cannot open shared object file: No such file or directory
@@ -59,7 +59,7 @@ Bu hatayı daha net anlamak için ve **main** ikili dosyamızın hangi dosyalara
 **main** ikili dosyasının çalışması için 4 tane dosyaya ihtiyacı var. Bunlardan birisi bizim oluşturduğumuz **libdeneme.so** dosyası.
 Fakat dosyayı bulamadığını söylüyor. Aslında kütüphaneyi **/usr/lib/libdeneme.so** konumunda olup olmadığını göre bu mesajı veriyor.
 
-.. code-block:: C
+.. code-block:: shell
 
 	$ ldd ./main
 	linux-vdso.so.1 (0x00007fffab5e8000)
@@ -70,7 +70,7 @@ Fakat dosyayı bulamadığını söylüyor. Aslında kütüphaneyi **/usr/lib/li
 **libdeneme.so** dosyamızı **/usr/lib/** konumuna kopyalayalım. Erişim izni verelim. **ldd ./main** komutunu çalıştırdığımızda
 artık dosyanın karşısında **not found** mesajı yok. Artık çalıcaşacaktır. 
 
-.. code-block:: C
+.. code-block:: shell
 
 	$ sudo cp /ders/kutuphane/libdeneme.so /usr/lib
 	$ sudo chmod 0755 /usr/lib/libdeneme.so
@@ -91,7 +91,7 @@ Eğer **/opt/main** klasörü yoksa oluşturmalıyız. Ben olmadığını varsay
 Son işlem olarak test edelim.
 Bunun için;
 
-.. code-block:: C
+.. code-block:: shell
 	
 	$ sudo rm /usr/lib/libdeneme.so
 	$ gcc -L/ders/kutuphane -Wl,-rpath=/opt/main -Wall -o main main.c -ldeneme
@@ -100,5 +100,3 @@ Bunun için;
 	$ sudo chmod 0755 /opt/main/libdeneme.so
 	$ ./main 
  	Merhaba Dünya
-
-
