@@ -35,3 +35,24 @@ Busybox derlemek için öncelikle **make defconfig** kullanılarak veya önceden
 	$ make
 
 Derleme bittiğinde kaynak kodun bulunduğu dizinde busybox dosyamız oluşmuş olur.
+
+Static olarak derlemiş olduğumuz busyboxu kullanarak milimal kök dizin oluşturabiliriz. Bunun için öncelikle boş bir dizin açıp içerisine busyboxu kopyalayalım.
+
+.. code-block:: shell
+
+	$ mkdir -p rootfs/bin
+	$ cp -fp /bin/busybox-static rootfs/busybox
+
+Şimdi **chroot** komutu ile içerisine girelim ve /bin içerisine kuralım.
+
+.. code-block:: shell
+
+	$ chroot rootfs /busybox --install -s /bin
+
+Artık minimal sistemimize giriş yapabiliriz.
+
+.. code-block:: shell
+
+	$ chroot rootfs /bin/ash
+
+

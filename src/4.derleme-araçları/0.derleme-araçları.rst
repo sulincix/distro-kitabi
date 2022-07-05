@@ -1,0 +1,6 @@
+Derleme araçları
+^^^^^^^^^^^^^^^^
+Linux dağıtımlarında kaynak kodlar bir derleme aracı yardımı ile derlenir.
+Bu araçlar sayesinde kaynak kod tek tek komut yazmaya gerek kalmadan derlenebilir. Ayrıca hataları yakalaması da daha kolay olur.
+
+Bu bölümde başlıca kullanılan derleme araçlarından söz edilecektir.
