@@ -84,10 +84,10 @@ artık dosyanın karşısında **not found** mesajı yok. Artık çalıcaşacakt
 
 Bazen kütüphane dosyalarının **/usr/lib** konumunda değilde bizim belirleyeceğimiz konumda olmasını isteyebiliriz.
 Örneğin **/opt/main/** konumunda olmasını istersek aşağıdaki gibi yapmalıyız. 
-Hatasız bir sonuç almak için öncelikle **/usr/lib/libdeneem.so** konumundaki dosyamızı silelim. 
+Hatasız bir sonuç almak için öncelikle **/usr/lib/libdeneme.so** konumundaki dosyamızı silelim. 
 Daha sonra **/opt/main/** konumunda olacak şekilde main ikili dosyamızı derleyelim. 
 Eğer **/opt/main** klasörü yoksa oluşturmalıyız. Ben olmadığını varsayıyorum ve oluşturuyorum.
-**libdeneme.so** dosyamızıda **/usr/lib/libdeneem.so** konumuna kopyalayıp izinlerini ayarlayalım. 
+**libdeneme.so** dosyamızıda **/usr/lib/libdeneme.so** konumuna kopyalayıp izinlerini ayarlayalım. 
 Son işlem olarak test edelim.
 Bunun için;
 
