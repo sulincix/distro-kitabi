@@ -57,3 +57,14 @@ Bu kaynak kod aşağıdaki gibi derlenir:
 	$ ./configure --prefix=/usr
 	$ make
 	$ make install
+
+Burada configure.ac dosyamızın sırasıyla şu şekilde yazıldı.
+
+Öncelikle **AC_INIT** kullanılarak projemizin adını ve sürümünü belirttik.
+Daha sonra **AC_CONFIG_HEADERS** kullandık. Bu da ayarlamalarımızı config.h adında bir dosyaya yazmamızı sağladı. Bu dosyayı derleme sırasında kullanabiliriz.
+Ardından **AC_CONFIG_AUX_DIR** kullanarak derleme dizininin konumunu tanımladık.
+**AC_INIT_AUTOMAKE** kullanarak aracımızı etkinleştirdik. Burada belirtilen sürüm gereken automake sürümüdür.
+**AC_CONFIG_FILES** kullanarak Makefile dosyamızı oluşturmasını sağladık.
+**AC_PROG_CC** kullanarak derlyeyicimizi kontrol ettik ve son olarak **AC_OUTPUT** kullanarak işlemi tamamladık. Artık kod derlenmeye hazır.
+
+

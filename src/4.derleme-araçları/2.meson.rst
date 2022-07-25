@@ -1,0 +1,35 @@
+meson
++++++
+Meson ile derleme yapmak için önce **meson build** kullanılır ardından **ninja -C build** ile derleme yapılır.
+Son olarak **ninja -C build install** yaparak kurulur.
+
+.. code-block:: shell
+
+	$ meson build --prefix=/usr
+	$ ninja -C build
+	$ ninja -C build install
+
+ninja komutundani **-C** parametresi derlenecek dizin adını belirtir. Bunu kullanmak yerine önce build dizinine girebilirsiniz.
+
+Meson projesi talimatları 2 dosyadan oluşur. Bunlar **meson.build** ve **meson_options.txt** dosyasıdır.
+
+Örnek bir meson.build dosyası aşağıdaki gibidir.
+
+
+.. code-block:: python
+
+	project('hello', 'c')
+	src = ['hello.c']
+	executable(get_option('prog_name'), src, install : true)
+
+Burada **project** ile projenin adı ve yazıldığı dil belirtilir. Ardından **src** adındaki bir değişkene haynak kodun dosyalarının listesi tanımlanır.
+Ardından **executable** kullanılarak derlenecek dosya belirlenir. Ayarlanabilir değerler için **get_option** kullanılır.
+
+**prog_name** değişkeni için meson_options.txt içerisine şu eklenmelidir.
+
+.. code-block:: python
+
+	option('prog_name', type: 'string', value: 'hello')
+
+Burada **type** değişkenin türünü **value** ise varsayılan değerini belirtir.
+
